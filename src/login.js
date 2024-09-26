@@ -1,9 +1,10 @@
+// src/Login.js
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Login.css'; // Import the CSS file
 
-const Login = () => {
+const Login = ({ setUser }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('customer'); // Default role
@@ -17,13 +18,16 @@ const Login = () => {
       const res = await axios.post('http://localhost:5000/login', { username, password, role });
       if (res.data.loggedIn) {
         // Store the user information in localStorage
-        localStorage.setItem('user', username); // Store the username
-        localStorage.setItem('role', role); // Optionally store the role as well
+        const userData = { id: res.data.user.id, username, role }; // Assuming the API returns the user ID
+        localStorage.setItem('user', JSON.stringify(userData)); // Store username, ID, and role
+
+        // Update user state in the app
+        setUser(userData);
 
         setSuccess('Login successful!');
         setError('');
-        // Redirect to home page with username as a query parameter
-        navigate(`/?user=${username}`); // Redirect to home page with the username
+        // Redirect to home page
+        navigate('/');
       } else {
         setError('Invalid credentials');
         setSuccess('');

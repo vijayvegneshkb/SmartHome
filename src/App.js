@@ -1,23 +1,51 @@
 // src/App.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './Layout';
 import Home from './Home';
 import CategoryPage from './CategoryPage';
 import CartPage from './CartPage';
+import CheckoutPage from './CheckoutPage';
 import Login from './login';
 import Register from './Register';
 
 function App() {
-  const [cart, setCart] = useState([]); // Initialize cart state
+  const [cart, setCart] = useState(() => {
+    const savedCart = localStorage.getItem('cart');
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
+
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('user');
+    try {
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+      return null;
+    }
+  });
 
   const addToCart = (product) => {
-    setCart((prevCart) => [...prevCart, product]);
+    const updatedCart = [...cart, product];
+    setCart(updatedCart);
+    localStorage.setItem('cart', JSON.stringify(updatedCart));
   };
+
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }, [cart]);
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
+    }
+  }, [user]);
 
   return (
     <Router>
-      <Layout cart={cart} setCart={setCart} addToCart={addToCart}>
+      <Layout cart={cart} setCart={setCart} addToCart={addToCart} user={user}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/doorbells" element={<CategoryPage category="doorbells" addToCart={addToCart} />} />
@@ -26,8 +54,12 @@ function App() {
           <Route path="/lightings" element={<CategoryPage category="lightings" addToCart={addToCart} />} />
           <Route path="/thermostats" element={<CategoryPage category="thermostats" addToCart={addToCart} />} />
           <Route path="/cart" element={<CartPage cartItems={cart} />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route 
+            path="/checkout" 
+            element={<CheckoutPage cartItems={cart} user={user} setUser={setUser} setCart={setCart} />} 
+          /> 
+          <Route path="/login" element={<Login setUser={setUser} />} />
+          <Route path="/register" element={<Register setUser={setUser} />} />
         </Routes>
       </Layout>
     </Router>

@@ -1,3 +1,4 @@
+// src/Layout.js
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from './assets/logo.png';
@@ -5,14 +6,16 @@ import './Home.css';
 
 const Layout = ({ children, cart, setCart, addToCart }) => {
   const navigate = useNavigate();
-  
-  // Retrieve the user name from localStorage
-  const userName = localStorage.getItem('user') || '';
+
+  // Retrieve the user object from localStorage and parse it
+  const savedUser = localStorage.getItem('user');
+  const user = savedUser ? JSON.parse(savedUser) : null; // Parse to get the user object
 
   const handleLogout = () => {
     localStorage.removeItem('user');
+    localStorage.removeItem('cart');
     setCart([]); // Clear the cart on logout
-    navigate('/');
+    navigate('/'); // Redirect after logout
   };
 
   const cartItemsCount = cart.length;
@@ -25,8 +28,8 @@ const Layout = ({ children, cart, setCart, addToCart }) => {
           <img src={logo} alt="Smart Home Logo" className="logo" />
           <h1 className="logo-name">SMART HOME</h1>
         </div>
-        {userName && <span className="user-greeting">Hello, {userName}</span>}
-        {userName && (
+        {user && user.username && <span className="user-greeting">Hello, {user.username}</span>}
+        {user && (
           <button onClick={handleLogout} className="logout-button">
             Logout
           </button>
@@ -45,7 +48,7 @@ const Layout = ({ children, cart, setCart, addToCart }) => {
         </ul>
         <div className="user-actions">
           <Link to="/orders" className="action-button">Orders</Link>
-          {!userName && <Link to="/login" className="action-button">Login</Link>}
+          {!user && <Link to="/login" className="action-button">Login</Link>}
           <Link to="/cart" className="action-button">Cart({cartItemsCount})</Link>
         </div>
       </nav>

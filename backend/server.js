@@ -61,36 +61,49 @@ app.post('/login', (req, res) => {
   });
 });
 
-// API for user registration
-app.post('/register', (req, res) => {
-  const { username, password, role } = req.body;
+// API for placing an order
+app.post('/checkout', (req, res) => {
+  const { userId, cartItems, customerDetails, deliveryOption, totalAmount, confirmationNumber, deliveryDate } = req.body;
 
-  // Validate role (assuming you want to ensure it's one of the predefined roles)
-  if (!['customer', 'salesman', 'manager'].includes(role)) {
-    return res.status(400).json({ message: 'Invalid role' });
-  }
+  // Insert into orders table
+  const insertOrderQuery = `
+    INSERT INTO orders (user_id, customer_name, address, street, city, state, delivery_option, zip_code, total_amount, confirmation_number, delivery_date)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-  // Check if the username already exists
-  const checkQuery = 'SELECT * FROM users WHERE username = ?';
-  db.query(checkQuery, [username], (err, result) => {
+  db.query(insertOrderQuery, [
+    userId,
+    customerDetails.name,
+    customerDetails.address,
+    customerDetails.street,
+    customerDetails.city,
+    customerDetails.state,
+    deliveryOption,
+    customerDetails.zipCode,
+    totalAmount,
+    confirmationNumber,
+    deliveryDate
+  ], (err, result) => {
     if (err) {
-      return res.status(500).send(err);
-    } else if (result.length > 0) {
-      return res.status(400).json({ message: 'Username already exists' });
+      console.error(err);
+      return res.status(500).json({ message: 'Error placing order' });
     }
 
-    // Insert the new user into the database
-    const insertQuery = 'INSERT INTO users (username, password, role) VALUES (?, ?, ?)';
-    db.query(insertQuery, [username, password, role], (err, result) => {
+    const orderId = result.insertId; // Get the ID of the inserted order
+
+    // Insert items into order_items table
+    const insertItemsQuery = 'INSERT INTO order_items (order_id, product_id, price) VALUES ?';
+    const orderItems = cartItems.map(item => [orderId, item.id, item.price]); // Removed quantity field
+    db.query(insertItemsQuery, [orderItems], (err) => {
       if (err) {
-        return res.status(500).send(err);
+        console.error(err);
+        return res.status(500).json({ message: 'Error inserting order items' });
       }
-      res.status(201).json({ message: 'User registered successfully' });
+
+      res.json({ message: 'Order placed successfully', confirmationNumber, deliveryDate, totalAmount });
     });
   });
 });
 
-const PORT = 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.listen(5000, () => {
+  console.log('Server is running on port 5000');
 });
