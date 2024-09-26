@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom'; // Import Link for navigation
+import axios from 'axios'; // Import axios for HTTP requests
 import './Register.css'; // Import the CSS file
 
-const Register = () => {
+const Register = ({ setUser }) => {
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -33,23 +34,28 @@ const Register = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username, password, role })
+      const response = await axios.post('http://localhost:5000/register', {
+        username, password, role
       });
 
-      const data = await response.json();
-      if (response.ok) {
-        setSuccess(data.message);
+      if (response.data.success) {
+        setSuccess(response.data.message);
         setError('');
+
+        // Automatically log in the user after successful registration
+        setUser({ username, role });
+
+        // Store user details in localStorage
+        localStorage.setItem('user', username);
+        localStorage.setItem('role', role);
+
         // Optionally reset form data
         setFormData({ username: '', password: '', confirmPassword: '', role: 'customer' });
-        navigate('/login'); // Navigate to login page after successful registration
+        
+        // Redirect to home page after successful registration
+        navigate(`/?user=${username}`);
       } else {
-        setError(data.message);
+        setError(response.data.message);
         setSuccess('');
       }
     } catch (error) {
