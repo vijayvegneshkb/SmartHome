@@ -1,0 +1,62 @@
+/* src/Login.css */
+.login-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px; /* Rounded corners */
+}
+
+.login-container h2 {
+    margin-bottom: 20px;
+    text-align: center; /* Center the heading */
+}
+
+.login-container input {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px; /* Larger font size */
+}
+
+.login-container select {
+    width: 95%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px; /* Larger font size */
+}
+
+.login-container button {
+    width: 50%;
+    padding: 10px;
+    background-color: #61dafb;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px; /* Larger font size */
+}
+
+.login-container button:hover {
+    background-color: #21a1f1;
+}
+
+.login-container p {
+    margin-top: 20px;
+    text-align: center; /* Center the paragraph */
+}
+
+.error-message {
+    color: red;
+    text-align: center; /* Center error message */
+}
+
+.success-message {
+    color: green;
+    text-align: center; /* Center success message */
+}
