@@ -2,23 +2,24 @@ import React, { useState, useEffect } from 'react';
 import './CheckoutPage.css';
 
 const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
-  console.log(cartItems); // Debug log to check cart items
-
-  // Ensure totalAmount calculation accounts for potential undefined or invalid prices
+  // Calculate the total amount
   const totalAmount = cartItems.length > 0
     ? cartItems.reduce((total, item) => total + (item.price || 0), 0)
     : 0;
 
+  const [shippingCost, setShippingCost] = useState(0);
+  const [discount, setDiscount] = useState(0);  // New state for discount
   const [formData, setFormData] = useState({
     name: '',
     address: '',
-    deliveryMethod: 'Home Delivery',
+    deliveryMethod: 'Home Delivery', // Default to Home Delivery
     zipCode: '',
-    storeId: '', // New field to store selected StoreID
+    storeId: '',
+    creditCardNumber: '',
   });
 
   const [orderConfirmation, setOrderConfirmation] = useState(null);
-  const [storeLocations, setStoreLocations] = useState([]); // State to hold fetched store locations
+  const [storeLocations, setStoreLocations] = useState([]);
 
   const deliveryDate = new Date();
   deliveryDate.setDate(deliveryDate.getDate() + 14); // Set date two weeks from now
@@ -34,6 +35,21 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
       .catch(error => console.error('Error fetching store locations:', error));
   }, []);
 
+  // Update shipping cost when the delivery method changes
+  useEffect(() => {
+    if (formData.deliveryMethod === 'Home Delivery') {
+      setShippingCost(totalAmount * 0.1); // 10% of total amount for shipping
+    } else if (formData.deliveryMethod === 'In-store Pickup') {
+      setShippingCost(0); // No shipping cost for in-store pickup
+    }
+  }, [formData.deliveryMethod, totalAmount]);
+
+  // Calculate a random discount between 1% and 9%
+  useEffect(() => {
+    const randomDiscount = Math.floor(Math.random() * 9) + 1; // Generate a random discount between 1% and 9%
+    setDiscount((totalAmount * randomDiscount) / 100);
+  }, [totalAmount]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -47,17 +63,21 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
       return;
     }
 
+    const grandTotal = totalAmount + shippingCost - discount; // Grand total including shipping and discount
+
     const orderDetails = {
-      userId: user.id,  // Ensure the user is logged in and has an ID
+      userId: user.id,
       cartItems,
       customerDetails: formData,
       deliveryOption: formData.deliveryMethod,
-      totalAmount,
+      totalAmount: grandTotal, // Send grand total (with shipping and discount)
       confirmationNumber,
-      deliveryDate: deliveryDate.toISOString().split('T')[0], // Store date in YYYY-MM-DD format
+      deliveryDate: deliveryDate.toISOString().split('T')[0], // YYYY-MM-DD format
+      creditCardNumber: formData.creditCardNumber,
+      shippingCost, // Include shipping cost
+      discount, // Include discount
     };
 
-    // Only include storeId for In-store Pickup
     if (formData.deliveryMethod === 'In-store Pickup') {
       orderDetails.storeId = formData.storeId;
     }
@@ -70,24 +90,22 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
       .then((response) => response.json())
       .then((data) => {
         if (data.message) {
-          console.log(data);
           setOrderConfirmation(data);
-          clearCart(); // Clear the cart after successful order
+          clearCart();
         }
       })
       .catch((error) => console.error('Error placing order:', error));
   };
 
   const clearCart = () => {
-    setCart([]); // Clear cart state
-    localStorage.removeItem('cart'); // Clear cart from localStorage
+    setCart([]);
+    localStorage.removeItem('cart');
   };
 
   return (
     <div className="checkout-page">
       <h1>Checkout</h1>
 
-      {/* Display Bill and Cart Items only if orderConfirmation is not set */}
       {!orderConfirmation && (
         <div className="bill-statement">
           <h2>Your Bill</h2>
@@ -101,10 +119,19 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
             <p>Your cart is empty.</p>
           )}
           <h3>Total: ${totalAmount.toFixed(2)}</h3>
+
+          {formData.deliveryMethod === 'Home Delivery' && (
+            <>
+              <h3>Shipping Cost (10%): ${shippingCost.toFixed(2)}</h3>
+            </>
+          )}
+
+          <h3>Discount: ${discount.toFixed(2)}</h3> {/* Display discount */}
+
+          <h3>Grand Total: ${(totalAmount + shippingCost - discount).toFixed(2)}</h3> {/* Display grand total */}
         </div>
       )}
 
-      {/* If order is not confirmed, display the checkout form */}
       {!orderConfirmation ? (
         <form className="checkout-form" onSubmit={handleConfirmOrder}>
           <h2>Enter Your Details</h2>
@@ -140,7 +167,6 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
             </select>
           </label>
 
-          {/* Show store selection only if In-store Pickup is chosen */}
           {formData.deliveryMethod === 'In-store Pickup' && (
             <label>
               Select Store:
@@ -159,6 +185,17 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
               </select>
             </label>
           )}
+
+          <label>
+            Credit Card Number:
+            <input
+              type="text"
+              name="creditCardNumber"
+              value={formData.creditCardNumber}
+              onChange={handleChange}
+              required
+            />
+          </label>
 
           <p>Pickup/Delivery Date: {deliveryDate.toDateString()}</p>
           <p>Confirmation Number: {confirmationNumber}</p>

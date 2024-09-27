@@ -74,13 +74,14 @@ app.get('/store-locations', (req, res) => {
 });
 
 // API for placing an order
+// API for placing an order
 app.post('/checkout', (req, res) => {
-  const { userId, cartItems, customerDetails, deliveryOption, totalAmount, confirmationNumber, deliveryDate, storeId } = req.body;
+  const { userId, cartItems, customerDetails, deliveryOption, totalAmount, confirmationNumber, deliveryDate, storeId, creditCardNumber, shippingCost, discount } = req.body;
 
   // Insert into orders table
   const insertOrderQuery = `
-    INSERT INTO orders (user_id, customer_name, address, delivery_option, total_amount, confirmation_number, delivery_date, store_id)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+    INSERT INTO orders (user_id, customer_name, address, delivery_option, total_amount, confirmation_number, delivery_date, store_id, credit_card_number, shippingCost, discount)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
   db.query(insertOrderQuery, [
     userId,
@@ -90,7 +91,10 @@ app.post('/checkout', (req, res) => {
     totalAmount,
     confirmationNumber,
     deliveryDate,
-    storeId || null // StoreID for in-store pickup, null for home delivery
+    storeId || null, // StoreID for in-store pickup, null for home delivery
+    creditCardNumber,
+    shippingCost,
+    discount,
   ], (err, result) => {
     if (err) {
       console.error(err);
@@ -118,6 +122,8 @@ app.post('/checkout', (req, res) => {
     });
   });
 });
+
+
 
 // Start the server
 const PORT = process.env.PORT || 5000;
