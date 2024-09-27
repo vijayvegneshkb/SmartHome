@@ -64,12 +64,12 @@ app.get('/store-locations', (req, res) => {
 // API for placing an order
 // API for placing an order
 app.post('/checkout', (req, res) => {
-  const { userId, cartItems, customerDetails, deliveryOption, totalAmount, confirmationNumber, deliveryDate, storeId, creditCardNumber, shippingCost, discount } = req.body;
+  const { userId, cartItems, customerDetails, deliveryOption, totalAmount, confirmationNumber, deliveryDate, storeId, creditCardNumber, shippingCost, discount, quantity } = req.body;
 
   // Insert into orders table
   const insertOrderQuery = `
-    INSERT INTO orders (user_id, customer_name, address, delivery_option, total_amount, confirmation_number, delivery_date, store_id, credit_card_number, shippingCost, discount)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    INSERT INTO orders (user_id, customer_name, address, delivery_option, total_amount, confirmation_number, delivery_date, store_id, credit_card_number, shippingCost, discount, quantity)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
   db.query(insertOrderQuery, [
     userId,
@@ -83,6 +83,7 @@ app.post('/checkout', (req, res) => {
     creditCardNumber,
     shippingCost,
     discount,
+    quantity, 
   ], (err, result) => {
     if (err) {
       console.error(err);
@@ -171,6 +172,65 @@ app.get('/products/category/:category', (req, res) => {
 });
 
 
+// server.js
+
+// API for fetching all orders
+app.get('/orders', (req, res) => {
+  const userId = req.query.userId; // Get user ID from query parameters
+  let query = 'SELECT orders.*, order_items.product_id, order_items.price, products.name AS product_name ' +
+              'FROM orders ' +
+              'LEFT JOIN order_items ON orders.id = order_items.order_id ' +
+              'LEFT JOIN products ON order_items.product_id = products.id';
+  if (userId) {
+    query += ' WHERE orders.user_id = ?'; // Filter orders by user ID if provided
+  }
+
+  db.query(query, [userId], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send(err);
+    }
+    const orders = result.reduce((acc, row) => {
+      const { id, customer_name, address, delivery_option, total_amount, confirmation_number, delivery_date, product_id, product_name, price, discount } = row;
+      if (!acc[id]) {
+        acc[id] = {
+          id,
+          customer_name,
+          address,
+          delivery_option,
+          total_amount,
+          confirmation_number,
+          delivery_date,
+          products: []
+        };
+      }
+      acc[id].products.push({ product_id, product_name, price, discount });
+      return acc;
+    }, {});
+    res.json(Object.values(orders));
+  });
+});
+
+// API to delete an order
+app.delete('/orders/:id', (req, res) => {
+  const orderId = req.params.id;
+  const deleteOrderQuery = 'DELETE FROM orders WHERE id = ?';
+  const deleteOrderItemsQuery = 'DELETE FROM order_items WHERE order_id = ?';
+
+  db.query(deleteOrderItemsQuery, [orderId], (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: 'Error deleting order items' });
+    }
+    db.query(deleteOrderQuery, [orderId], (err) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'Error deleting order' });
+      }
+      res.json({ message: 'Order deleted successfully' });
+    });
+  });
+});
 
 
 // Start the server

@@ -1,0 +1,52 @@
+/* src/Orders.css */
+.orders-container {
+    margin: 20px;
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly; /* Keep your spacing */
+  }
+  
+  h2 {
+    margin-bottom: 20px;
+    width: 100%; /* Ensure title takes full width */
+  }
+  
+  .order-card {
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    width: calc(33.33% - 20px); /* Adjust width for 3 columns */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add a slight shadow for depth */
+    min-width: 300px; /* Set a minimum width for the card */
+    display: flex; /* Use flexbox to arrange content */
+    flex-direction: column; /* Arrange content vertically */
+    justify-content: space-between; /* Space out content and push button to the bottom */
+  }
+  
+  .order-info {
+    margin-bottom: 20px;
+    /*text-align: center;*/ /* Center text in order info */
+  }
+  
+  .product-item {
+    margin-left: 20px;
+  }
+  
+  .delete-button {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    align-self: center; /* Center the button horizontally */
+    margin-top: auto; /* Push button to the bottom of the card */
+  }
+  
+  .delete-button:hover {
+    background-color: #c0392b;
+  }
+  

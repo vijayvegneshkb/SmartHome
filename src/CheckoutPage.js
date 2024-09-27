@@ -8,7 +8,7 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
     : 0;
 
   const [shippingCost, setShippingCost] = useState(0);
-  const [discount, setDiscount] = useState(0);  // New state for discount
+  const [discount, setDiscount] = useState(0);
   const [formData, setFormData] = useState({
     name: '',
     address: '',
@@ -63,19 +63,23 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
       return;
     }
 
-    const grandTotal = totalAmount + shippingCost - discount; // Grand total including shipping and discount
+    const grandTotal = totalAmount + shippingCost - discount;
+
+    // Track quantity as the total number of products in the cart
+    const quantity = cartItems.length;
 
     const orderDetails = {
       userId: user.id,
       cartItems,
       customerDetails: formData,
       deliveryOption: formData.deliveryMethod,
-      totalAmount: grandTotal, // Send grand total (with shipping and discount)
+      totalAmount: grandTotal,
       confirmationNumber,
       deliveryDate: deliveryDate.toISOString().split('T')[0], // YYYY-MM-DD format
       creditCardNumber: formData.creditCardNumber,
-      shippingCost, // Include shipping cost
-      discount, // Include discount
+      shippingCost,
+      discount,
+      quantity, // Send quantity to backend
     };
 
     if (formData.deliveryMethod === 'In-store Pickup') {
@@ -126,9 +130,9 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
             </>
           )}
 
-          <h3>Discount: ${discount.toFixed(2)}</h3> {/* Display discount */}
+          <h3>Discount: ${discount.toFixed(2)}</h3>
 
-          <h3>Grand Total: ${(totalAmount + shippingCost - discount).toFixed(2)}</h3> {/* Display grand total */}
+          <h3>Grand Total: ${(totalAmount + shippingCost - discount).toFixed(2)}</h3>
         </div>
       )}
 
