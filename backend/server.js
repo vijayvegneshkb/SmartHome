@@ -33,18 +33,6 @@ app.get('/products', (req, res) => {
   });
 });
 
-// API for fetching products by category
-app.get('/products/category/:category', (req, res) => {
-  const category = req.params.category;
-  const query = 'SELECT * FROM products WHERE category = ?';
-  db.query(query, [category], (err, result) => {
-    if (err) {
-      res.status(500).send(err);
-    } else {
-      res.json(result);
-    }
-  });
-});
 
 // API for fetching users for login
 app.post('/login', (req, res) => {
@@ -122,6 +110,66 @@ app.post('/checkout', (req, res) => {
     });
   });
 });
+
+// API for fetching distinct manufacturers
+app.get('/manufacturers', (req, res) => {
+  const query = 'SELECT DISTINCT manufacturer FROM products';
+  db.query(query, (err, result) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.json(result);
+    }
+  });
+});
+
+// API for fetching categories and their respective manufacturers
+app.get('/categories', (req, res) => {
+  const query = `
+    SELECT category, manufacturer
+    FROM products
+    GROUP BY category, manufacturer
+  `;
+  db.query(query, (err, result) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    
+    // Group manufacturers under their respective categories
+    const categories = {};
+    result.forEach(row => {
+      if (!categories[row.category]) {
+        categories[row.category] = [];
+      }
+      categories[row.category].push(row.manufacturer);
+    });
+
+    res.json(categories);
+  });
+});
+
+// API for fetching products by category and manufacturer
+app.get('/products/category/:category', (req, res) => {
+  const category = req.params.category;
+  const manufacturer = req.query.manufacturer; // Get manufacturer from query params
+  let query = 'SELECT * FROM products WHERE category = ?';
+  let queryParams = [category];
+
+  // Check if manufacturer is provided and modify the query accordingly
+  if (manufacturer) {
+    query += ' AND manufacturer = ?';
+    queryParams.push(manufacturer);
+  }
+
+  db.query(query, queryParams, (err, result) => {
+    if (err) {
+      return res.status(500).send(err);
+    } else {
+      res.json(result);
+    }
+  });
+});
+
 
 
 

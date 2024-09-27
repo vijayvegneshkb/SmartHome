@@ -1,15 +1,30 @@
-// src/Layout.js
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from './assets/logo.png';
 import './Home.css';
 
 const Layout = ({ children, cart, setCart, addToCart }) => {
+  const [categories, setCategories] = useState({});
   const navigate = useNavigate();
 
   // Retrieve the user object from localStorage and parse it
   const savedUser = localStorage.getItem('user');
   const user = savedUser ? JSON.parse(savedUser) : null; // Parse to get the user object
+
+  useEffect(() => {
+    // Fetch categories and their manufacturers from the server
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/categories');
+        const data = await response.json();
+        setCategories(data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('user');
@@ -57,41 +72,19 @@ const Layout = ({ children, cart, setCart, addToCart }) => {
         {/* Left Side Navbar */}
         <nav className="side-nav">
           <ul>
-            <li>Doorbell
-              <ul>
-                <li><Link to="/doorbells/manufacturer1">Manufacturer 1</Link></li>
-                <li><Link to="/doorbells/manufacturer2">Manufacturer 2</Link></li>
-                <li><Link to="/doorbells/manufacturer3">Manufacturer 3</Link></li>
-              </ul>
-            </li>
-            <li>Doorlock
-              <ul>
-                <li><Link to="/doorlocks/manufacturer1">Manufacturer 1</Link></li>
-                <li><Link to="/doorlocks/manufacturer2">Manufacturer 2</Link></li>
-                <li><Link to="/doorlocks/manufacturer3">Manufacturer 3</Link></li>
-              </ul>
-            </li>
-            <li>Speakers
-              <ul>
-                <li><Link to="/speakers/manufacturer1">Manufacturer 1</Link></li>
-                <li><Link to="/speakers/manufacturer2">Manufacturer 2</Link></li>
-                <li><Link to="/speakers/manufacturer3">Manufacturer 3</Link></li>
-              </ul>
-            </li>
-            <li>Lightings
-              <ul>
-                <li><Link to="/lightings/manufacturer1">Manufacturer 1</Link></li>
-                <li><Link to="/lightings/manufacturer2">Manufacturer 2</Link></li>
-                <li><Link to="/lightings/manufacturer3">Manufacturer 3</Link></li>
-              </ul>
-            </li>
-            <li>Thermostats
-              <ul>
-                <li><Link to="/thermostats/manufacturer1">Manufacturer 1</Link></li>
-                <li><Link to="/thermostats/manufacturer2">Manufacturer 2</Link></li>
-                <li><Link to="/thermostats/manufacturer3">Manufacturer 3</Link></li>
-              </ul>
-            </li>
+            {/* Iterate through categories to create links with manufacturers */}
+            {Object.keys(categories).map((category, index) => (
+              <li key={index}>
+                <span className="category-title">{category}</span>
+                <ul>
+                  {categories[category].map((manufacturer, idx) => (
+                    <li key={idx}>
+                      <Link to={`/${category.toLowerCase()}/${manufacturer}`}>{manufacturer}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
           </ul>
         </nav>
 
