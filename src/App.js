@@ -17,12 +17,7 @@ function App() {
 
   const [user, setUser] = useState(() => {
     const savedUser = localStorage.getItem('user');
-    try {
-      return savedUser ? JSON.parse(savedUser) : null;
-    } catch (error) {
-      console.error('Error parsing user data:', error);
-      return null;
-    }
+    return savedUser ? JSON.parse(savedUser) : null;
   });
 
   const addToCart = (product) => {
@@ -53,11 +48,8 @@ function App() {
           <Route path="/speakers" element={<CategoryPage category="speakers" addToCart={addToCart} />} />
           <Route path="/lightings" element={<CategoryPage category="lightings" addToCart={addToCart} />} />
           <Route path="/thermostats" element={<CategoryPage category="thermostats" addToCart={addToCart} />} />
-          <Route path="/cart" element={<CartPage cartItems={cart} />} />
-          <Route 
-            path="/checkout" 
-            element={<CheckoutPage cartItems={cart} user={user} setUser={setUser} setCart={setCart} />} 
-          /> 
+          <Route path="/cart" element={<CartPage cartItems={cart} setCart={setCart} />} />
+          <Route path="/checkout" element={<CheckoutPage cartItems={cart} user={user} setUser={setUser} setCart={setCart} />} />
           <Route path="/login" element={<Login setUser={setUser} />} />
           <Route path="/register" element={<Register setUser={setUser} />} />
         </Routes>

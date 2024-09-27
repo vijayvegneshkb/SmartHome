@@ -1,10 +1,26 @@
 // src/CartPage.js
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './CartPage.css'; // Import the new CSS file
 
-const CartPage = ({ cartItems }) => {
+const CartPage = ({ cartItems, setCart }) => {
+  // Calculate the total amount
   const totalAmount = cartItems.reduce((total, item) => total + item.price, 0);
+
+  // Function to remove an item from the cart
+  const removeFromCart = (index) => {
+    const newCartItems = cartItems.filter((_, i) => i !== index);
+    setCart(newCartItems);
+
+    // Update local storage
+    localStorage.setItem('cart', JSON.stringify(newCartItems));
+  };
+
+  useEffect(() => {
+    // Set the cartItems from local storage on component mount
+    const storedCartItems = JSON.parse(localStorage.getItem('cart')) || [];
+    setCart(storedCartItems);
+  }, [setCart]);
 
   return (
     <div className="cart-page">
@@ -23,7 +39,7 @@ const CartPage = ({ cartItems }) => {
                   <h2 className="product-name">{item.name}</h2>
                   <p className="manufacturer">Manufacturer: {item.manufacturer}</p>
                   <p className="price">Price: ${item.price}</p>
-                  <button className="remove-button">Remove</button>
+                  <button className="remove-button" onClick={() => removeFromCart(index)}>Remove</button>
                 </div>
               </div>
             ))}

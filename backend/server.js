@@ -61,27 +61,36 @@ app.post('/login', (req, res) => {
   });
 });
 
+// API to fetch all store locations for in-store pickup
+app.get('/store-locations', (req, res) => {
+  const query = 'SELECT * FROM StoreLocations';
+  db.query(query, (err, result) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.json(result);
+    }
+  });
+});
+
 // API for placing an order
 app.post('/checkout', (req, res) => {
-  const { userId, cartItems, customerDetails, deliveryOption, totalAmount, confirmationNumber, deliveryDate } = req.body;
+  const { userId, cartItems, customerDetails, deliveryOption, totalAmount, confirmationNumber, deliveryDate, storeId } = req.body;
 
   // Insert into orders table
   const insertOrderQuery = `
-    INSERT INTO orders (user_id, customer_name, address, street, city, state, delivery_option, zip_code, total_amount, confirmation_number, delivery_date)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    INSERT INTO orders (user_id, customer_name, address, delivery_option, total_amount, confirmation_number, delivery_date, store_id)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
   db.query(insertOrderQuery, [
     userId,
     customerDetails.name,
     customerDetails.address,
-    customerDetails.street,
-    customerDetails.city,
-    customerDetails.state,
     deliveryOption,
-    customerDetails.zipCode,
     totalAmount,
     confirmationNumber,
-    deliveryDate
+    deliveryDate,
+    storeId || null // StoreID for in-store pickup, null for home delivery
   ], (err, result) => {
     if (err) {
       console.error(err);
@@ -92,18 +101,26 @@ app.post('/checkout', (req, res) => {
 
     // Insert items into order_items table
     const insertItemsQuery = 'INSERT INTO order_items (order_id, product_id, price) VALUES ?';
-    const orderItems = cartItems.map(item => [orderId, item.id, item.price]); // Removed quantity field
-    db.query(insertItemsQuery, [orderItems], (err) => {
+    const items = cartItems.map(item => [orderId, item.id, item.price]);
+
+    db.query(insertItemsQuery, [items], (err) => {
       if (err) {
         console.error(err);
-        return res.status(500).json({ message: 'Error inserting order items' });
+        return res.status(500).json({ message: 'Error adding items to order' });
       }
 
-      res.json({ message: 'Order placed successfully', confirmationNumber, deliveryDate, totalAmount });
+      res.json({
+        message: 'Order placed successfully',
+        confirmationNumber: confirmationNumber,
+        deliveryDate: deliveryDate,
+        totalAmount: totalAmount,
+      });
     });
   });
 });
 
-app.listen(5000, () => {
-  console.log('Server is running on port 5000');
+// Start the server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

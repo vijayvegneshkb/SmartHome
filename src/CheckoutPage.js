@@ -1,32 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './CheckoutPage.css';
 
 const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
   console.log(cartItems); // Debug log to check cart items
 
-  const totalAmount = cartItems.reduce((total, item) => total + item.price, 0);
-  
+  // Ensure totalAmount calculation accounts for potential undefined or invalid prices
+  const totalAmount = cartItems.length > 0
+    ? cartItems.reduce((total, item) => total + (item.price || 0), 0)
+    : 0;
+
   const [formData, setFormData] = useState({
     name: '',
     address: '',
-    street: '',
-    city: '',
-    state: '',
     deliveryMethod: 'Home Delivery',
     zipCode: '',
+    storeId: '', // New field to store selected StoreID
   });
-  
+
   const [orderConfirmation, setOrderConfirmation] = useState(null);
-  const zipCodes = ['12345', '67890', '54321', '09876'];
+  const [storeLocations, setStoreLocations] = useState([]); // State to hold fetched store locations
+
+  const deliveryDate = new Date();
+  deliveryDate.setDate(deliveryDate.getDate() + 14); // Set date two weeks from now
+  const confirmationNumber = Math.floor(Math.random() * 1000000);
+
+  // Fetch store locations on component mount
+  useEffect(() => {
+    fetch('http://localhost:5000/store-locations')
+      .then(response => response.json())
+      .then(data => {
+        setStoreLocations(data);
+      })
+      .catch(error => console.error('Error fetching store locations:', error));
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-
-  const confirmationNumber = Math.floor(Math.random() * 1000000);
-  const deliveryDate = new Date();
-  deliveryDate.setDate(deliveryDate.getDate() + 14); // Set date two weeks from now
 
   const handleConfirmOrder = (e) => {
     e.preventDefault();
@@ -45,6 +56,11 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
       confirmationNumber,
       deliveryDate: deliveryDate.toISOString().split('T')[0], // Store date in YYYY-MM-DD format
     };
+
+    // Only include storeId for In-store Pickup
+    if (formData.deliveryMethod === 'In-store Pickup') {
+      orderDetails.storeId = formData.storeId;
+    }
 
     fetch('http://localhost:5000/checkout', {
       method: 'POST',
@@ -113,36 +129,6 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
             />
           </label>
           <label>
-            Street:
-            <input
-              type="text"
-              name="street"
-              value={formData.street}
-              onChange={handleChange}
-              required
-            />
-          </label>
-          <label>
-            City:
-            <input
-              type="text"
-              name="city"
-              value={formData.city}
-              onChange={handleChange}
-              required
-            />
-          </label>
-          <label>
-            State:
-            <input
-              type="text"
-              name="state"
-              value={formData.state}
-              onChange={handleChange}
-              required
-            />
-          </label>
-          <label>
             Delivery Method:
             <select
               name="deliveryMethod"
@@ -154,17 +140,20 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
             </select>
           </label>
 
+          {/* Show store selection only if In-store Pickup is chosen */}
           {formData.deliveryMethod === 'In-store Pickup' && (
             <label>
-              Zip Code:
+              Select Store:
               <select
-                name="zipCode"
-                value={formData.zipCode}
+                name="storeId"
+                value={formData.storeId}
                 onChange={handleChange}
+                required
               >
-                {zipCodes.map((zip, index) => (
-                  <option key={index} value={zip}>
-                    {zip}
+                <option value="">Select Store</option>
+                {storeLocations.map((store) => (
+                  <option key={store.StoreID} value={store.StoreID}>
+                    {store.Street}, {store.City}, {store.State}, {store.ZipCode}
                   </option>
                 ))}
               </select>
@@ -182,7 +171,7 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
           <p>Thank you for your order, {formData.name}.</p>
           <p>Confirmation Number: {orderConfirmation.confirmationNumber}</p>
           <p>Delivery/Pickup Date: {new Date(orderConfirmation.deliveryDate).toDateString()}</p>
-          <p>Total Amount: ${orderConfirmation.totalAmount.toFixed(2)}</p>
+          <p>Total Amount: ${orderConfirmation.totalAmount ? orderConfirmation.totalAmount.toFixed(2) : "0.00"}</p>
         </div>
       )}
     </div>
