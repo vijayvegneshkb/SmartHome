@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import './CheckoutPage.css';
 
 const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
-  // Calculate the total amount
   const totalAmount = cartItems.length > 0
     ? cartItems.reduce((total, item) => total + (item.price || 0), 0)
     : 0;
@@ -12,20 +11,19 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
   const [formData, setFormData] = useState({
     name: '',
     address: '',
-    deliveryMethod: 'Home Delivery', // Default to Home Delivery
+    deliveryMethod: 'Home Delivery',
     zipCode: '',
     storeId: '',
     creditCardNumber: '',
   });
-
+  const [salesmanUserId, setSalesmanUserId] = useState(''); // For salesman user ID input
   const [orderConfirmation, setOrderConfirmation] = useState(null);
   const [storeLocations, setStoreLocations] = useState([]);
 
   const deliveryDate = new Date();
-  deliveryDate.setDate(deliveryDate.getDate() + 14); // Set date two weeks from now
+  deliveryDate.setDate(deliveryDate.getDate() + 14);
   const confirmationNumber = Math.floor(Math.random() * 1000000);
 
-  // Fetch store locations on component mount
   useEffect(() => {
     fetch('http://localhost:5000/store-locations')
       .then(response => response.json())
@@ -35,18 +33,16 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
       .catch(error => console.error('Error fetching store locations:', error));
   }, []);
 
-  // Update shipping cost when the delivery method changes
   useEffect(() => {
     if (formData.deliveryMethod === 'Home Delivery') {
-      setShippingCost(totalAmount * 0.1); // 10% of total amount for shipping
+      setShippingCost(totalAmount * 0.1);
     } else if (formData.deliveryMethod === 'In-store Pickup') {
-      setShippingCost(0); // No shipping cost for in-store pickup
+      setShippingCost(0);
     }
   }, [formData.deliveryMethod, totalAmount]);
 
-  // Calculate a random discount between 1% and 9%
   useEffect(() => {
-    const randomDiscount = Math.floor(Math.random() * 9) + 1; // Generate a random discount between 1% and 9%
+    const randomDiscount = Math.floor(Math.random() * 9) + 1;
     setDiscount((totalAmount * randomDiscount) / 100);
   }, [totalAmount]);
 
@@ -58,28 +54,29 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
   const handleConfirmOrder = (e) => {
     e.preventDefault();
 
-    if (!user) {
-      alert('Please log in to place an order.');
+    // Use the entered userId if the user is a salesman, else use the logged-in user
+    const userId = (user && user.role === 'salesman') ? salesmanUserId : user.id;
+
+    if (!userId) {
+      alert('Please log in to place an order or enter a user ID.');
       return;
     }
 
     const grandTotal = totalAmount + shippingCost - discount;
-
-    // Track quantity as the total number of products in the cart
     const quantity = cartItems.length;
 
     const orderDetails = {
-      userId: user.id,
+      userId, // Use the userId from the input or user props
       cartItems,
       customerDetails: formData,
       deliveryOption: formData.deliveryMethod,
       totalAmount: grandTotal,
       confirmationNumber,
-      deliveryDate: deliveryDate.toISOString().split('T')[0], // YYYY-MM-DD format
+      deliveryDate: deliveryDate.toISOString().split('T')[0],
       creditCardNumber: formData.creditCardNumber,
       shippingCost,
       discount,
-      quantity, // Send quantity to backend
+      quantity,
     };
 
     if (formData.deliveryMethod === 'In-store Pickup') {
@@ -123,15 +120,10 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
             <p>Your cart is empty.</p>
           )}
           <h3>Total: ${totalAmount.toFixed(2)}</h3>
-
           {formData.deliveryMethod === 'Home Delivery' && (
-            <>
-              <h3>Shipping Cost (10%): ${shippingCost.toFixed(2)}</h3>
-            </>
+            <h3>Shipping Cost (10%): ${shippingCost.toFixed(2)}</h3>
           )}
-
           <h3>Discount: ${discount.toFixed(2)}</h3>
-
           <h3>Grand Total: ${(totalAmount + shippingCost - discount).toFixed(2)}</h3>
         </div>
       )}
@@ -139,6 +131,20 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
       {!orderConfirmation ? (
         <form className="checkout-form" onSubmit={handleConfirmOrder}>
           <h2>Enter Your Details</h2>
+
+          {/* Salesman user ID input */}
+          {user && user.role === 'salesman' && (
+            <label>
+              User ID:
+              <input
+                type="text"
+                value={salesmanUserId}
+                onChange={(e) => setSalesmanUserId(e.target.value)}
+                required
+              />
+            </label>
+          )}
+
           <label>
             Name:
             <input

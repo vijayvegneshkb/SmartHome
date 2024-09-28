@@ -315,6 +315,101 @@ app.get('/orders', (req, res) => {
   });
 });
 
+// Endpoint to add a new order
+app.post('/orders', (req, res) => {
+  const { customer_name, address, delivery_option, total_amount, credit_card_number, shippingCost, discount, quantity, product_id } = req.body;
+  const sql = 'INSERT INTO orders (customer_name, address, delivery_option, total_amount, credit_card_number, shippingCost, discount, quantity, product_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  db.query(sql, [customer_name, address, delivery_option, total_amount, credit_card_number, shippingCost, discount, quantity, product_id], (err, results) => {
+      if (err) {
+          console.error(err);
+          return res.status(500).json({ message: 'Failed to create order.' });
+      }
+      res.status(201).json({ message: 'Order created successfully!', orderId: results.insertId });
+  });
+});
+
+// // Endpoint to update an existing order
+// app.put('/orders/:orderId', (req, res) => {
+//   const { orderId } = req.params;
+//   const { customer_name, address, delivery_option, total_amount, credit_card_number, shippingCost, discount, quantity, product_id } = req.body;
+//   const sql = 'UPDATE orders SET customer_name = ?, address = ?, delivery_option = ?, total_amount = ?, credit_card_number = ?, shippingCost = ?, discount = ?, quantity = ?, product_id = ? WHERE id = ?';
+//   db.query(sql, [customer_name, address, delivery_option, total_amount, credit_card_number, shippingCost, discount, quantity, product_id, orderId], (err, results) => {
+//       if (err) {
+//           console.error(err);
+//           return res.status(500).json({ message: 'Failed to update order.' });
+//       }
+//       res.status(200).json({ message: 'Order updated successfully!' });
+//   });
+// });
+
+app.put('/orders/:id', (req, res) => {
+  const orderId = req.params.id;
+  const {
+    customer_name,
+    address,
+    delivery_option,
+    total_amount,
+    credit_card_number,
+    shippingCost,
+    discount,
+    delivery_date,
+    product_id // Optional field
+  } = req.body;
+
+  // Update the orders table
+  const orderQuery = `
+    UPDATE orders
+    SET customer_name = ?, address = ?, delivery_option = ?, total_amount = ?, 
+        credit_card_number = ?, shippingCost = ?, discount = ?, delivery_date = ?
+    WHERE id = ?`;
+
+  db.query(orderQuery, [
+    customer_name,
+    address,
+    delivery_option,
+    total_amount,
+    credit_card_number || null,
+    shippingCost || null,
+    discount || null,
+    delivery_date || null,
+    orderId
+  ], (err, result) => {
+    if (err) {
+      console.error('Error updating order:', err);
+      return res.status(500).send(err);
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).send('Order not found');
+    }
+
+    // Update order_items table if product_id is provided
+    if (product_id) {
+      const itemQuery = `
+        UPDATE order_items
+        SET product_id = ?
+        WHERE order_id = ?`;
+
+      db.query(itemQuery, [product_id, orderId], (err, itemResult) => {
+        if (err) {
+          console.error('Error updating order_items:', err);
+          return res.status(500).send(err);
+        }
+
+        if (itemResult.affectedRows === 0) {
+          return res.status(404).send('No items found for this order');
+        }
+
+        res.json({ message: 'Order and order items updated successfully' });
+      });
+    } else {
+      res.json({ message: 'Order updated successfully, no item changes made' });
+    }
+  });
+});
+
+
+
 // API to delete an order
 app.delete('/orders/:id', (req, res) => {
   const orderId = req.params.id;
@@ -336,6 +431,71 @@ app.delete('/orders/:id', (req, res) => {
   });
 });
 
+// Existing imports and connection setup remain unchanged...
+
+// API for fetching all customers
+app.get('/customers', (req, res) => {
+  const query = 'SELECT * FROM users WHERE role = "customer"';
+  db.query(query, (err, result) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.json(result);
+    }
+  });
+});
+
+// API for creating a new customer
+app.post('/create-customer', (req, res) => {
+  const { username, password } = req.body;
+
+  // Insert the new customer into the database
+  const insertQuery = 'INSERT INTO users (username, password, role) VALUES (?, ?, "customer")';
+  db.query(insertQuery, [username, password], (err, result) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.status(201).json({ message: 'Customer created successfully', id: result.insertId });
+  });
+});
+
+// API for updating a specific customer by ID
+app.put('/customers/:id', (req, res) => {
+  const customerId = parseInt(req.params.id);
+  const { username, password } = req.body;
+  
+  const query = 'UPDATE users SET username = ?, password = ? WHERE id = ? AND role = "customer"';
+  
+  db.query(query, [username, password, customerId], (err, result) => {
+    if (err) {
+      res.status(500).send(err);
+    } else if (result.affectedRows === 0) {
+      res.status(404).send('Customer not found');
+    } else {
+      res.json({ id: customerId, username });
+    }
+  });
+});
+
+// API for deleting a specific customer by ID
+app.delete('/customers/:id', (req, res) => {
+  const customerId = req.params.id;
+
+  const query = 'DELETE FROM users WHERE id = ? AND role = "customer"';
+  
+  db.query(query, [customerId], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: 'Error deleting customer' });
+    }
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Customer not found' });
+    }
+    
+    res.json({ message: 'Customer deleted successfully' });
+  });
+});
 
 // Start the server
 const PORT = process.env.PORT || 5000;

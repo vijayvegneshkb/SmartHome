@@ -27,11 +27,13 @@ const Login = ({ setUser }) => {
         setSuccess('Login successful!');
         setError('');
         // Redirect based on role
-        if (role === 'manager') {
-          navigate('/store-manager'); // Redirect to StoreManager page
-        } else {
-          navigate('/'); // Redirect to home page for other roles
-        }
+      if (role === 'manager') {
+        navigate('/store-manager'); // Redirect to StoreManager page
+      } else if (role === 'salesman') {
+        navigate('/salesman'); // Redirect to Salesman page
+      } else {
+        navigate('/'); // Redirect to home page for other roles
+      }
       } else {
         setError('Invalid credentials');
         setSuccess('');
