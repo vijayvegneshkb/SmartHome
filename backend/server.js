@@ -172,13 +172,17 @@ app.post('/checkout', (req, res) => {
 
   // Insert into orders table
   const insertOrderQuery = `
-    INSERT INTO orders (user_id, customer_name, address, delivery_option, total_amount, confirmation_number, delivery_date, store_id, credit_card_number, shippingCost, discount, quantity)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    INSERT INTO orders (user_id, customer_name, address, street, city, state, zip_code, delivery_option, total_amount, confirmation_number, delivery_date, store_id, credit_card_number, shippingCost, discount, quantity)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
   db.query(insertOrderQuery, [
     userId,
     customerDetails.name,
     customerDetails.address,
+    customerDetails.street,   // New street field
+    customerDetails.city,     // New city field
+    customerDetails.state,    // New state field
+    customerDetails.zipCode,  // New zip code field
     deliveryOption,
     totalAmount,
     confirmationNumber,
@@ -281,10 +285,12 @@ app.get('/products/category/:category', (req, res) => {
 // API for fetching all orders
 app.get('/orders', (req, res) => {
   const userId = req.query.userId; // Get user ID from query parameters
-  let query = 'SELECT orders.*, order_items.product_id, order_items.price, products.name AS product_name ' +
+  let query = 'SELECT orders.*, order_items.product_id, order_items.price, products.name AS product_name, ' +
+              'orders.street, orders.city, orders.state, orders.zip_code ' + // Include additional fields
               'FROM orders ' +
               'LEFT JOIN order_items ON orders.id = order_items.order_id ' +
               'LEFT JOIN products ON order_items.product_id = products.id';
+  
   if (userId) {
     query += ' WHERE orders.user_id = ?'; // Filter orders by user ID if provided
   }
@@ -295,12 +301,16 @@ app.get('/orders', (req, res) => {
       return res.status(500).send(err);
     }
     const orders = result.reduce((acc, row) => {
-      const { id, customer_name, address, delivery_option, total_amount, confirmation_number, delivery_date, product_id, product_name, price, discount } = row;
+      const { id, customer_name, address, street, city, state, zip_code, delivery_option, total_amount, confirmation_number, delivery_date, product_id, product_name, price, discount } = row;
       if (!acc[id]) {
         acc[id] = {
           id,
           customer_name,
           address,
+          street,
+          city,
+          state,
+          zip_code,
           delivery_option,
           total_amount,
           confirmation_number,
@@ -315,11 +325,12 @@ app.get('/orders', (req, res) => {
   });
 });
 
+
 // Endpoint to add a new order
 app.post('/orders', (req, res) => {
-  const { customer_name, address, delivery_option, total_amount, credit_card_number, shippingCost, discount, quantity, product_id } = req.body;
-  const sql = 'INSERT INTO orders (customer_name, address, delivery_option, total_amount, credit_card_number, shippingCost, discount, quantity, product_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-  db.query(sql, [customer_name, address, delivery_option, total_amount, credit_card_number, shippingCost, discount, quantity, product_id], (err, results) => {
+  const { customer_name, address, street, city, state, zip_code, delivery_option, total_amount, credit_card_number, shippingCost, discount, quantity, product_id } = req.body;
+  const sql = 'INSERT INTO orders (customer_name, address, street, city, state, zip_code, delivery_option, total_amount, credit_card_number, shippingCost, discount, quantity, product_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  db.query(sql, [customer_name, address, street, city, state, zip_code, delivery_option, total_amount, credit_card_number, shippingCost, discount, quantity, product_id], (err, results) => {
       if (err) {
           console.error(err);
           return res.status(500).json({ message: 'Failed to create order.' });
@@ -347,6 +358,10 @@ app.put('/orders/:id', (req, res) => {
   const {
     customer_name,
     address,
+    street,
+    city,
+    state,
+    zip_code,
     delivery_option,
     total_amount,
     credit_card_number,
@@ -359,13 +374,17 @@ app.put('/orders/:id', (req, res) => {
   // Update the orders table
   const orderQuery = `
     UPDATE orders
-    SET customer_name = ?, address = ?, delivery_option = ?, total_amount = ?, 
+    SET customer_name = ?, address = ?, street = ?, city = ?, state = ?, zip_code= ?, delivery_option = ?, total_amount = ?, 
         credit_card_number = ?, shippingCost = ?, discount = ?, delivery_date = ?
     WHERE id = ?`;
 
   db.query(orderQuery, [
     customer_name,
     address,
+    street,
+    city,
+    state,
+    zip_code,
     delivery_option,
     total_amount,
     credit_card_number || null,

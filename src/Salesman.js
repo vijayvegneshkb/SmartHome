@@ -12,6 +12,10 @@ const Salesman = () => {
   const [currentOrder, setCurrentOrder] = useState(null);
   const [updatedCustomerName, setUpdatedCustomerName] = useState('');
   const [updatedAddress, setUpdatedAddress] = useState('');
+  const [updatedStreet, setUpdatedStreet] = useState('');
+  const [updatedCity, setUpdatedCity] = useState('');
+  const [updatedState, setUpdatedState] = useState('');
+  const [updatedZipcode, setUpdatedZipcode] = useState('');
   const [updatedTotalAmount, setUpdatedTotalAmount] = useState('');
   const [updatedDeliveryOption, setUpdatedDeliveryOption] = useState('');
   const [updatedDeliveryDate, setUpdatedDeliveryDate] = useState('');
@@ -55,6 +59,10 @@ const Salesman = () => {
       await axios.put(`http://localhost:5000/orders/${currentOrder.id}`, {
         customer_name: updatedCustomerName,
         address: updatedAddress,
+        street: updatedStreet,
+        city: updatedCity,
+        state: updatedState,
+        zipcode: updatedZipcode,
         total_amount: updatedTotalAmount,
         delivery_option: updatedDeliveryOption,
         delivery_date: updatedDeliveryDate,
@@ -77,6 +85,10 @@ const Salesman = () => {
     setCurrentOrder(order);
     setUpdatedCustomerName(order.customer_name);
     setUpdatedAddress(order.address);
+    setUpdatedStreet(order.street);
+    setUpdatedCity(order.city);
+    setUpdatedState(order.state);
+    setUpdatedZipcode(order.zip_code);
     setUpdatedTotalAmount(order.total_amount);
     setUpdatedDeliveryOption(order.delivery_option);
     setUpdatedDeliveryDate(order.delivery_date);
@@ -139,6 +151,10 @@ const Salesman = () => {
                 <p><strong>Order ID:</strong> {order.id}</p>
                 <p><strong>Customer Name:</strong> {order.customer_name}</p>
                 <p><strong>Address:</strong> {order.address}</p>
+                <p><strong>Street:</strong> {order.street}</p>
+                <p><strong>City:</strong> {order.city}</p>
+                <p><strong>State:</strong> {order.state}</p>
+                <p><strong>ZipCode:</strong> {order.zip_code}</p>
                 <p><strong>Total Amount:</strong> ${order.total_amount}</p>
                 <p><strong>Delivery Option:</strong> {order.delivery_option}</p>
                 <p><strong>Delivery Date:</strong> {order.delivery_date}</p>
@@ -180,6 +196,34 @@ const Salesman = () => {
                 placeholder="Address"
                 value={updatedAddress}
                 onChange={(e) => setUpdatedAddress(e.target.value)}
+                required
+              />
+              <input
+                type="text"
+                placeholder="Street"
+                value={updatedStreet}
+                onChange={(e) => setUpdatedStreet(e.target.value)}
+                required
+              />
+              <input
+                type="text"
+                placeholder="City"
+                value={updatedCity}
+                onChange={(e) => setUpdatedCity(e.target.value)}
+                required
+              />
+              <input
+                type="text"
+                placeholder="State"
+                value={updatedState}
+                onChange={(e) => setUpdatedState(e.target.value)}
+                required
+              />
+              <input
+                type="text"
+                placeholder="ZipCode"
+                value={updatedZipcode}
+                onChange={(e) => setUpdatedZipcode(e.target.value)}
                 required
               />
               <input

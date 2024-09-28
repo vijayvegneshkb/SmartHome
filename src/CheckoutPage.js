@@ -11,12 +11,15 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
   const [formData, setFormData] = useState({
     name: '',
     address: '',
-    deliveryMethod: 'Home Delivery',
+    street: '',
+    city: '',
+    state: '',
     zipCode: '',
+    deliveryMethod: 'Home Delivery',
     storeId: '',
     creditCardNumber: '',
   });
-  const [salesmanUserId, setSalesmanUserId] = useState(''); // For salesman user ID input
+  const [salesmanUserId, setSalesmanUserId] = useState('');
   const [orderConfirmation, setOrderConfirmation] = useState(null);
   const [storeLocations, setStoreLocations] = useState([]);
 
@@ -27,18 +30,12 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
   useEffect(() => {
     fetch('http://localhost:5000/store-locations')
       .then(response => response.json())
-      .then(data => {
-        setStoreLocations(data);
-      })
+      .then(data => setStoreLocations(data))
       .catch(error => console.error('Error fetching store locations:', error));
   }, []);
 
   useEffect(() => {
-    if (formData.deliveryMethod === 'Home Delivery') {
-      setShippingCost(totalAmount * 0.1);
-    } else if (formData.deliveryMethod === 'In-store Pickup') {
-      setShippingCost(0);
-    }
+    setShippingCost(formData.deliveryMethod === 'Home Delivery' ? totalAmount * 0.1 : 0);
   }, [formData.deliveryMethod, totalAmount]);
 
   useEffect(() => {
@@ -54,7 +51,6 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
   const handleConfirmOrder = (e) => {
     e.preventDefault();
 
-    // Use the entered userId if the user is a salesman, else use the logged-in user
     const userId = (user && user.role === 'salesman') ? salesmanUserId : user.id;
 
     if (!userId) {
@@ -63,10 +59,9 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
     }
 
     const grandTotal = totalAmount + shippingCost - discount;
-    const quantity = cartItems.length;
 
     const orderDetails = {
-      userId, // Use the userId from the input or user props
+      userId,
       cartItems,
       customerDetails: formData,
       deliveryOption: formData.deliveryMethod,
@@ -76,12 +71,9 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
       creditCardNumber: formData.creditCardNumber,
       shippingCost,
       discount,
-      quantity,
+      quantity: cartItems.length,
+      storeId: formData.deliveryMethod === 'In-store Pickup' ? formData.storeId : undefined,
     };
-
-    if (formData.deliveryMethod === 'In-store Pickup') {
-      orderDetails.storeId = formData.storeId;
-    }
 
     fetch('http://localhost:5000/checkout', {
       method: 'POST',
@@ -93,6 +85,8 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
         if (data.message) {
           setOrderConfirmation(data);
           clearCart();
+        } else {
+          alert('Error placing order: ' + data.error);
         }
       })
       .catch((error) => console.error('Error placing order:', error));
@@ -106,7 +100,6 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
   return (
     <div className="checkout-page">
       <h1>Checkout</h1>
-
       {!orderConfirmation && (
         <div className="bill-statement">
           <h2>Your Bill</h2>
@@ -131,8 +124,6 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
       {!orderConfirmation ? (
         <form className="checkout-form" onSubmit={handleConfirmOrder}>
           <h2>Enter Your Details</h2>
-
-          {/* Salesman user ID input */}
           {user && user.role === 'salesman' && (
             <label>
               User ID:
@@ -144,7 +135,6 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
               />
             </label>
           )}
-
           <label>
             Name:
             <input
@@ -161,6 +151,46 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
               type="text"
               name="address"
               value={formData.address}
+              onChange={handleChange}
+              required
+            />
+          </label>
+          <label>
+            Street:
+            <input
+              type="text"
+              name="street"
+              value={formData.street}
+              onChange={handleChange}
+              required
+            />
+          </label>
+          <label>
+            City:
+            <input
+              type="text"
+              name="city"
+              value={formData.city}
+              onChange={handleChange}
+              required
+            />
+          </label>
+          <label>
+            State:
+            <input
+              type="text"
+              name="state"
+              value={formData.state}
+              onChange={handleChange}
+              required
+            />
+          </label>
+          <label>
+            Zip Code:
+            <input
+              type="text"
+              name="zipCode"
+              value={formData.zipCode}
               onChange={handleChange}
               required
             />
@@ -204,6 +234,7 @@ const CheckoutPage = ({ cartItems, user, setUser, setCart }) => {
               value={formData.creditCardNumber}
               onChange={handleChange}
               required
+              // Consider adding pattern validation here
             />
           </label>
 

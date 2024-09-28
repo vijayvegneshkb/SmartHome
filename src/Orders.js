@@ -62,6 +62,10 @@ const Orders = () => {
               <p><strong>Order Confirmation:</strong> {order.confirmation_number}</p>
               <p><strong>Customer:</strong> {order.customer_name}</p>
               <p><strong>Address:</strong> {order.address}</p>
+              <p><strong>Street:</strong> {order.street}</p> {/* Display Street */}
+              <p><strong>City:</strong> {order.city}</p>     {/* Display City */}
+              <p><strong>State:</strong> {order.state}</p>   {/* Display State */}
+              <p><strong>Zip Code:</strong> {order.zip_code}</p> {/* Display Zip Code */}
               <p><strong>Delivery Option:</strong> {order.delivery_option}</p>
               <p><strong>Total Amount:</strong> ${order.total_amount}</p>
               <p><strong>Delivery Date:</strong> {formatDate(order.delivery_date)}</p>
