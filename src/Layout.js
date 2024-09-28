@@ -65,6 +65,10 @@ const Layout = ({ children, cart, setCart, addToCart }) => {
           </ul>
           <div className="user-actions">
             <Link to="/orders" className="action-button">Orders</Link>
+            {/* Conditional rendering of Salesman Dashboard button */}
+            {user && user.role === 'salesman' && (
+              <Link to="/salesman" className="action-button">Salesman Dashboard</Link>
+            )}
             {!user && <Link to="/login" className="action-button">Login</Link>}
             <Link to="/cart" className="action-button">Cart({cartItemsCount})</Link>
           </div>
