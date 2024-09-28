@@ -1,0 +1,109 @@
+/* StoreManager.css */
+.store-manager {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .product-form {
+    margin-bottom: 20px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .product-form input {
+    margin-right: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s;
+  }
+  
+  .product-form input:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+  
+  .add-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .add-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .products-list {
+    margin-top: 20px;
+  }
+  
+  .products-list table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .products-list th, .products-list td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .products-list th {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .edit-button,
+  .delete-button,
+  .save-button,
+  .cancel-button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .edit-button {
+    background-color: #ffc107;
+    color: white;
+  }
+  
+  .delete-button {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .save-button {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .cancel-button {
+    background-color: #6c757d;
+    color: white;
+  }
+  
+  .edit-button:hover {
+    background-color: #e0a800;
+  }
+  
+  .delete-button:hover {
+    background-color: #c82333;
+  }
+  
+  .save-button:hover {
+    background-color: #218838;
+  }
+  
+  .cancel-button:hover {
+    background-color: #5a6268;
+  }
+  

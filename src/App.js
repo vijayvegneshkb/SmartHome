@@ -10,6 +10,7 @@ import Login from './login';
 import Register from './Register';
 import ManufacturerPage from './ManufacturerPage';
 import Orders from './Orders';
+import StoreManager from './StoreManager';
 
 function App() {
   const [cart, setCart] = useState(() => {
@@ -56,6 +57,7 @@ function App() {
           <Route path="/register" element={<Register setUser={setUser} />} />
           <Route path="/:category/:manufacturer" element={<ManufacturerPage addToCart={addToCart} />} /> {/* Pass addToCart prop */}
           <Route path="/orders" element={<Orders />} />
+          <Route path="/store-manager" element={<StoreManager />} />
         </Routes>
       </Layout>
     </Router>

@@ -32,6 +32,82 @@ app.get('/products', (req, res) => {
     }
   });
 });
+// API for fetching a specific product by ID
+app.get('/products/:id', (req, res) => {
+  const productId = parseInt(req.params.id);
+  const query = 'SELECT * FROM products WHERE id = ?';
+  
+  db.query(query, [productId], (err, result) => {
+    if (err) {
+      res.status(500).send(err);
+    } else if (result.length === 0) {
+      res.status(404).send('Product not found');
+    } else {
+      res.json(result[0]);
+    }
+  });
+});
+
+// API for adding a new product
+app.post('/products', (req, res) => {
+  const { name, price, image, manufacturer, category } = req.body;
+  
+  const query = 'INSERT INTO products (name, price, image, manufacturer, category) VALUES (?, ?, ?, ?, ?)';
+  
+  db.query(query, [name, price, image, manufacturer, category], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: 'Error adding product' });
+    }
+    
+    res.status(201).json({
+      id: result.insertId,
+      name,
+      price,
+      image,
+      manufacturer,
+      category,
+    });
+  });
+});
+
+// API for updating a specific product by ID
+app.put('/products/:id', (req, res) => {
+  const productId = parseInt(req.params.id);
+  const { name, price, image, manufacturer, category } = req.body;
+  const query = 'UPDATE products SET name = ?, price = ?, image = ?, manufacturer = ?, category = ? WHERE id = ?';
+
+  db.query(query, [name, price, image, manufacturer, category, productId], (err, result) => {
+    if (err) {
+      res.status(500).send(err);
+    } else if (result.affectedRows === 0) {
+      res.status(404).send('Product not found');
+    } else {
+      res.json({ id: productId, name, price, image, manufacturer, category });
+    }
+  });
+});
+
+// API for deleting a specific product by ID
+app.delete('/products/:id', (req, res) => {
+  const productId = req.params.id;
+  
+  const query = 'DELETE FROM products WHERE id = ?';
+  
+  db.query(query, [productId], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: 'Error deleting product' });
+    }
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    
+    res.json({ message: 'Product deleted successfully' });
+  });
+});
+
 
 
 // API for fetching users for login
@@ -48,6 +124,34 @@ app.post('/login', (req, res) => {
     }
   });
 });
+
+// API for user registration
+app.post('/register', (req, res) => {
+  const { username, password, role } = req.body;
+  // Validate role (assuming you want to ensure it's one of the predefined roles)
+  if (!['customer', 'salesman', 'manager'].includes(role)) {
+    return res.status(400).json({ message: 'Invalid role' });
+  }
+  // Check if the username already exists
+  const checkQuery = 'SELECT * FROM users WHERE username = ?';
+  db.query(checkQuery, [username], (err, result) => {
+    if (err) {
+      return res.status(500).send(err);
+    } else if (result.length > 0) {
+      return res.status(400).json({ message: 'Username already exists' });
+    }
+    // Insert the new user into the database
+    const insertQuery = 'INSERT INTO users (username, password, role) VALUES (?, ?, ?)';
+    db.query(insertQuery, [username, password, role], (err, result) => {
+      if (err) {
+        return res.status(500).send(err);
+      }
+      res.status(201).json({ message: 'User registered successfully' });
+    });
+  });
+});
+
+
 
 // API to fetch all store locations for in-store pickup
 app.get('/store-locations', (req, res) => {

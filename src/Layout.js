@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom'; // Import useLocation
 import logo from './assets/logo.png';
 import './Home.css';
 
 const Layout = ({ children, cart, setCart, addToCart }) => {
   const [categories, setCategories] = useState({});
   const navigate = useNavigate();
+  const location = useLocation(); // Use the useLocation hook to get the current path
 
   // Retrieve the user object from localStorage and parse it
   const savedUser = localStorage.getItem('user');
@@ -51,42 +52,46 @@ const Layout = ({ children, cart, setCart, addToCart }) => {
         )}
       </header>
 
-      {/* Top Menu Bar */}
-      <nav className="menu-bar">
-        <ul className="menu-list">
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/doorbells">Doorbell</Link></li>
-          <li><Link to="/doorlocks">Doorlock</Link></li>
-          <li><Link to="/speakers">Speakers</Link></li>
-          <li><Link to="/lightings">Lightings</Link></li>
-          <li><Link to="/thermostats">Thermostats</Link></li>
-        </ul>
-        <div className="user-actions">
-          <Link to="/orders" className="action-button">Orders</Link>
-          {!user && <Link to="/login" className="action-button">Login</Link>}
-          <Link to="/cart" className="action-button">Cart({cartItemsCount})</Link>
-        </div>
-      </nav>
+      {/* Top Menu Bar - Conditional Rendering */}
+      {location.pathname !== '/store-manager' && ( // Only show if not on store-manager page
+        <nav className="menu-bar">
+          <ul className="menu-list">
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/doorbells">Doorbell</Link></li>
+            <li><Link to="/doorlocks">Doorlock</Link></li>
+            <li><Link to="/speakers">Speakers</Link></li>
+            <li><Link to="/lightings">Lightings</Link></li>
+            <li><Link to="/thermostats">Thermostats</Link></li>
+          </ul>
+          <div className="user-actions">
+            <Link to="/orders" className="action-button">Orders</Link>
+            {!user && <Link to="/login" className="action-button">Login</Link>}
+            <Link to="/cart" className="action-button">Cart({cartItemsCount})</Link>
+          </div>
+        </nav>
+      )}
 
       <div className="content-container">
-        {/* Left Side Navbar */}
-        <nav className="side-nav">
-          <ul>
-            {/* Iterate through categories to create links with manufacturers */}
-            {Object.keys(categories).map((category, index) => (
-              <li key={index}>
-                <span className="category-title">{category}</span>
-                <ul>
-                  {categories[category].map((manufacturer, idx) => (
-                    <li key={idx}>
-                      <Link to={`/${category.toLowerCase()}/${manufacturer}`}>{manufacturer}</Link>
-                    </li>
-                  ))}
-                </ul>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        {/* Left Side Navbar - Conditional Rendering */}
+        {location.pathname !== '/store-manager' && ( // Only show if not on store-manager page
+          <nav className="side-nav">
+            <ul>
+              {/* Iterate through categories to create links with manufacturers */}
+              {Object.keys(categories).map((category, index) => (
+                <li key={index}>
+                  <span className="category-title">{category}</span>
+                  <ul>
+                    {categories[category].map((manufacturer, idx) => (
+                      <li key={idx}>
+                        <Link to={`/${category.toLowerCase()}/${manufacturer}`}>{manufacturer}</Link>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
 
         {/* Render Child Components */}
         <main className="main-content">

@@ -26,8 +26,12 @@ const Login = ({ setUser }) => {
 
         setSuccess('Login successful!');
         setError('');
-        // Redirect to home page
-        navigate('/');
+        // Redirect based on role
+        if (role === 'manager') {
+          navigate('/store-manager'); // Redirect to StoreManager page
+        } else {
+          navigate('/'); // Redirect to home page for other roles
+        }
       } else {
         setError('Invalid credentials');
         setSuccess('');
