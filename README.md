@@ -1,70 +1,131 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Smart Home Project - Database and Application Setup
 
-## Available Scripts
+This document provides a guide on setting up the **MySQL** and **MongoDB** databases, as well as running the React application and backend server. Follow the steps below to install, configure, and use the project.
 
-In the project directory, you can run:
+## Table of Contents
+1. [MySQL Setup](#mysql-setup)
+   - [Prerequisites](#prerequisites)
+   - [Importing the MySQL Database](#importing-the-mysql-database)
+2. [MongoDB Setup](#mongodb-setup)
+   - [Prerequisites](#prerequisites)
+   - [Importing the MongoDB Database](#importing-the-mongodb-database)
+3. [Running the Application](#running-the-application)
+   - [Backend Setup](#backend-setup)
+   - [Frontend Setup](#frontend-setup)
+4. [Configuring the Project](#configuring-the-project)
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## MySQL Setup
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Prerequisites
+Before importing the MySQL database, ensure you have the following installed:
+- [MySQL Server](https://dev.mysql.com/downloads/mysql/)
+- [MySQL Workbench](https://dev.mysql.com/downloads/workbench/)
 
-### `npm test`
+### Importing the MySQL Database
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Open **MySQL Workbench** and connect to your MySQL instance.
+2. Go to the **Administration** tab on the left, and select **Data Import/Restore**.
+3. Under **Import Options**, select **"Import from Self-Contained File"**.
+   - Select the provided `.sql` file, e.g., `smarthomeDB.sql`.
+4. In the **Default Target Schema**, either select an existing schema or create a new one.
+5. Click **Start Import**.
+6. Once the import is complete, verify that the tables and data are visible under the `smarthomes_db` schema.
 
-### `npm run build`
+The MySQL database contains the following tables:
+- `orders`
+- `order_items`
+- `products`
+- `storelocations`
+- `users`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## MongoDB Setup
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Prerequisites
+Make sure you have the following installed:
+- [MongoDB Server](https://www.mongodb.com/try/download/community)
+- [MongoDB Compass](https://www.mongodb.com/products/compass) (optional, for UI-based interaction)
 
-### `npm run eject`
+### Importing the MongoDB Database
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+#### Using MongoDB Compass
+1. Open **MongoDB Compass** and connect to your local MongoDB instance.
+2. In the left sidebar, select or create the `smart-home` database.
+3. Select the **reviews** collection, or create it if it doesn't exist.
+4. Click the **Import Data** button at the top right.
+5. Choose the `.json` file, select **JSON** as the file type, and import the data into the `reviews` collection.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+---
 
-## Learn More
+## Running the Application
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+To run the application, you need to run the frontend and backend separately.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Backend Setup
 
-### Code Splitting
+1. Open a terminal and navigate to the `smart-home/backend` folder:
+   ```bash
+   cd smart-home/backend
+   ```
+2. Install the backend dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the backend server:
+   ```bash
+   node server.js
+   ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### Frontend Setup
 
-### Analyzing the Bundle Size
+1. Open another terminal and navigate to the `smart-home` folder:
+   ```bash
+   cd smart-home
+   ```
+2. Install the frontend dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the React frontend:
+   ```bash
+   npm start
+   ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Accessing the Application
+- Once both the backend and frontend servers are running, open a browser and navigate to:
+  ```bash
+  http://localhost:3000/
+  ```
 
-### Making a Progressive Web App
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Configuring the Project
 
-### Advanced Configuration
+### MySQL Configuration
+1. Open the project in your code editor.
+2. Find the **MySQL connection** configuration file, located in the backend folder (`server.js`).
+3. Update the connection details:
+   ```javascript
+   const db = mysql.createConnection({
+      host: 'localhost',
+      user: 'root',
+      password: 'admin',
+      database: 'smarthomes_db'
+   });
+   ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
+## Additional Notes
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+- Ensure that both **MySQL** and **MongoDB** servers are running before starting the application.
+- If you need to reset the databases, follow the import instructions again for **MySQL** and **MongoDB**.
+- The backend must be running on `localhost:5000`  for API requests to work correctly from the frontend.
 
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Feel free to reach out for further assistance or queries.
