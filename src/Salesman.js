@@ -163,7 +163,7 @@ const Salesman = () => {
                 <ul>
                   {order.products.map((product) => (
                     <li key={product.product_id}>
-                      {product.product_name} - {product.quantity} x ${product.price}
+                      {product.product_name} - ${product.price}
                     </li>
                   ))}
                 </ul>
