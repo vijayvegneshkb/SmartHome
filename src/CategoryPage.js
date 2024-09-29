@@ -54,6 +54,7 @@ const CategoryPage = ({ category, addToCart }) => {
     const userName = localStorage.getItem('user'); // Check if user is logged in
     if (userName) {
       addToCart(product); // Add to cart if logged in
+      alert('You have added the product to your cart');
     } else {
       navigate('/login'); // Redirect to login if not logged in
     }

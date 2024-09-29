@@ -32,6 +32,7 @@ const Layout = ({ children, cart, setCart, addToCart }) => {
     localStorage.removeItem('cart');
     setCart([]); // Clear the cart on logout
     navigate('/'); // Redirect after logout
+    alert('You have been logged out');
   };
 
   const cartItemsCount = cart.length;

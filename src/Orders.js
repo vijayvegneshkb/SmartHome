@@ -35,6 +35,7 @@ const Orders = () => {
       try {
         await fetch(`http://localhost:5000/orders/${orderId}`, { method: 'DELETE' });
         setOrders(orders.filter(order => order.id !== orderId));
+        alert('Your order has been deleted');
       } catch (error) {
         console.error('Error deleting order:', error);
       }

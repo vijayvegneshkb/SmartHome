@@ -14,6 +14,7 @@ const CartPage = ({ cartItems, setCart }) => {
 
     // Update local storage
     localStorage.setItem('cart', JSON.stringify(newCartItems));
+    alert('Removed item from cart');
   };
 
   useEffect(() => {
