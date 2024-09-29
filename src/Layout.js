@@ -79,6 +79,9 @@ const Layout = ({ children, cart, setCart, addToCart }) => {
         {/* Left Side Navbar - Conditional Rendering */}
         {location.pathname !== '/store-manager' && ( // Only show if not on store-manager page
           <nav className="side-nav">
+            <div className="trending-button-container">
+              <Link to="/trending" className="trending-button">Trending</Link>
+            </div>
             <ul>
               {/* Iterate through categories to create links with manufacturers */}
               {Object.keys(categories).map((category, index) => (

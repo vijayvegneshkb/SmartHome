@@ -12,6 +12,7 @@ import ManufacturerPage from './ManufacturerPage';
 import Orders from './Orders';
 import StoreManager from './StoreManager';
 import Salesman from './Salesman';
+import Trending from './Trending';
 
 function App() {
   const [cart, setCart] = useState(() => {
@@ -60,6 +61,7 @@ function App() {
           <Route path="/orders" element={<Orders />} />
           <Route path="/store-manager" element={<StoreManager />} />
           <Route path="/salesman" element={<Salesman />} />
+          <Route path="/trending" element={<Trending addToCart={addToCart} />} />
         </Routes>
       </Layout>
     </Router>

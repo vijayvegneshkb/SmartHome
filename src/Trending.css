@@ -1,0 +1,29 @@
+.trending-container {
+    padding: 20px;
+  }
+  
+  .trending-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .trending-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .trending-image {
+    width: 100px; /* Adjust size as needed */
+    height: auto;
+    margin-right: 15px;
+  }
+  
+  .trending-info h2 {
+    margin: 0;
+  }
+  
+  .trending-info p {
+    margin: 5px 0 0;
+  }
+  

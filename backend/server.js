@@ -573,3 +573,56 @@ app.get('/reviews/:productId', async (req, res) => {
   }
 });
 
+// API endpoint to get trending products
+// API endpoint to get trending products
+app.get('/trending', async (req, res) => {
+  try {
+    // Step 1: Fetch average product ratings from MongoDB
+    const trendingProducts = await reviewsCollection.aggregate([
+      {
+        $group: {
+          _id: "$productId",
+          averageRating: { $avg: { $toDouble: "$reviewRating" } },
+        },
+      },
+      {
+        $sort: { averageRating: -1 },
+      },
+      {
+        $limit: 5,
+      },
+      {
+        $project: {
+          _id: 0,
+          productId: "$_id",
+        },
+      },
+    ]).toArray();  // Ensure you convert the cursor to an array
+
+    // Check if trendingProducts is empty
+    if (trendingProducts.length === 0) {
+      return res.json({ message: "No trending products found.", products: [] }); // Send an empty array instead of 404
+    }
+
+    // Extract product IDs from the results
+    const productIds = trendingProducts.map(product => product.productId);
+
+    // Step 2: Fetch product details from MySQL based on product IDs
+    // Use parameterized query to prevent SQL injection
+    const placeholders = productIds.map(() => '?').join(',');
+    const query = `SELECT * FROM products WHERE id IN (${placeholders})`;
+
+    db.query(query, productIds, (error, results) => {
+      if (error) {
+        console.error('Error fetching products from MySQL:', error);
+        return res.status(500).json({ message: "Error fetching products from MySQL." });
+      }
+      
+      // Send the product records as response
+      res.json(results);
+    });
+  } catch (error) {
+    console.error('Error fetching trending products:', error);
+    res.status(500).json({ message: "Server error." }); // Return JSON response
+  }
+});
