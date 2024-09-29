@@ -609,8 +609,11 @@ app.get('/trending', async (req, res) => {
 
     // Step 2: Fetch product details from MySQL based on product IDs
     // Use parameterized query to prevent SQL injection
+    //const placeholders = productIds.map(() => '?').join(',');
+    //const query = `SELECT * FROM products WHERE id IN (${placeholders})`;
     const placeholders = productIds.map(() => '?').join(',');
-    const query = `SELECT * FROM products WHERE id IN (${placeholders})`;
+    const fieldOrder = productIds.map(id => `'${id}'`).join(','); // Prepare IDs for FIELD()
+    const query = `SELECT * FROM products WHERE id IN (${placeholders}) ORDER BY FIELD(id, ${fieldOrder})`;
 
     db.query(query, productIds, (error, results) => {
       if (error) {
