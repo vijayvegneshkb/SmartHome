@@ -516,6 +516,37 @@ app.delete('/customers/:id', (req, res) => {
   });
 });
 
+// API endpoint for top 5 store locations
+app.get('/top-store-locations', (req, res) => {
+  const query = `
+    SELECT s.StoreID, s.Street, s.City, s.State, s.ZipCode, SUM(o.quantity) AS total_products
+    FROM StoreLocations s
+    JOIN orders o ON s.StoreID = o.store_id
+    GROUP BY s.StoreID
+    ORDER BY total_products DESC
+    LIMIT 5;
+  `;
+
+  db.query(query, (err, result) => {
+    if (err) {
+      console.error('Error fetching top store locations:', err);
+      return res.status(500).json({ error: 'Failed to fetch top store locations' });
+    }
+    
+    // Format the result if needed, or send it directly
+    const topStoreLocations = result.map(row => ({
+      storeId: row.StoreID,
+      street: row.Street,
+      city: row.City,
+      state: row.State,
+      zipCode: row.ZipCode,
+      totalOrders: row.total_products,
+    }));
+
+    res.json(topStoreLocations);
+  });
+});
+
 // Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

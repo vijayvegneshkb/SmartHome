@@ -26,4 +26,48 @@
   .trending-info p {
     margin: 5px 0 0;
   }
+
+  /* Trending.css */
+.top-store-locations {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 20px;
+    background-color: #f7f7f7;
+    border-radius: 10px;
+    margin-top: 20px;
+  }
+  
+  .top-store-locations ul {
+    display: flex;
+    list-style: none;
+    padding: 0;
+  }
+  
+  .top-store-locations li {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 10px;
+    width: 30%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+  }
+  
+  .top-store-locations li:hover {
+    transform: translateY(-5px);
+  }
+  
+  .top-store-locations h3 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .top-store-locations p {
+    font-size: 14px;
+    color: #666;
+  }
+  
   

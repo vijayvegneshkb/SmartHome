@@ -6,6 +6,7 @@ import './Trending.css'; // Optional: For styling
 
 const Trending = ({ addToCart }) => {
   const [trendingProducts, setTrendingProducts] = useState([]);
+  const [topStoreLocations, setTopStoreLocations] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate(); // Get the navigate function
   const [showModal, setShowModal] = useState(false);
@@ -59,6 +60,15 @@ const Trending = ({ addToCart }) => {
       .then(response => response.json())
       .then(data => setStoreLocations(data))
       .catch(error => console.error('Error fetching store locations:', error));
+
+    // Fetch top store locations
+    axios.get('http://localhost:5000/top-store-locations')
+    .then(response => {
+        setTopStoreLocations(response.data);
+    })
+    .catch(error => {
+        console.error('Error fetching top store locations:', error);
+    });
   }, []);
 
   const handleBuyClick = (product) => {
@@ -190,6 +200,22 @@ const Trending = ({ addToCart }) => {
                 <button className="view-reviews-button" onClick={() => handleViewReviewsButtonClick(product.id)}>View Reviews</button>
                 </div>
             ))}
+        </div>
+
+        <h2>Top 5 Store Locations</h2>
+        <div className="top-store-locations">
+            {topStoreLocations.length > 0 ? (
+                <ul>
+                    {topStoreLocations.map((store) => (
+                        <li key={store.storeId}>
+                            <h3>{store.street}, {store.city}, {store.state}, {store.zipCode}</h3>
+                            <p>Products: {store.totalOrders}</p>
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <p>No store locations available.</p>
+            )}
         </div>
         {/* Modal for review form */}
         {showModal && (
