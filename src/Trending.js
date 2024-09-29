@@ -6,6 +6,7 @@ import './Trending.css'; // Optional: For styling
 
 const Trending = ({ addToCart }) => {
   const [trendingProducts, setTrendingProducts] = useState([]);
+  const [topProducts, setTopProducts] = useState([]);
   const [topStoreLocations, setTopStoreLocations] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate(); // Get the navigate function
@@ -69,6 +70,16 @@ const Trending = ({ addToCart }) => {
     .catch(error => {
         console.error('Error fetching top store locations:', error);
     });
+
+    axios
+      .get('http://localhost:5000/api/top-sold-products')
+      .then((response) => {
+        setTopProducts(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching the top products:', error);
+      });
+
   }, []);
 
   const handleBuyClick = (product) => {
@@ -202,7 +213,7 @@ const Trending = ({ addToCart }) => {
             ))}
         </div>
 
-        <h2>Top 5 Store Locations</h2>
+        <h2>Top ZipCodes/Locations</h2>
         <div className="top-store-locations">
             {topStoreLocations.length > 0 ? (
                 <ul>
@@ -217,6 +228,22 @@ const Trending = ({ addToCart }) => {
                 <p>No store locations available.</p>
             )}
         </div>
+
+        <h2>Most Sold Products</h2>
+        <div className="product-grid">
+            {topProducts.map(product => (
+                <div key={product.id} className="product-card">
+                <img src={importImage(product.image)} alt={product.name} className="product-image" />
+                <h2>{product.name}</h2>
+                <p>Manufacturer: {product.manufacturer}</p>
+                <p className="price">Price: ${product.price}</p>
+                <button className="buy-button" onClick={() => handleBuyClick(product)}>Buy</button>
+                <button className="review-button" onClick={() => handleReviewButtonClick(product)}>Give Review</button>
+                <button className="view-reviews-button" onClick={() => handleViewReviewsButtonClick(product.id)}>View Reviews</button>
+                </div>
+            ))}
+        </div>
+
         {/* Modal for review form */}
         {showModal && (
             <div className="modal">

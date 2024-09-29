@@ -547,6 +547,28 @@ app.get('/top-store-locations', (req, res) => {
   });
 });
 
+// Define the API route to get the top 5 sold products
+app.get('/api/top-sold-products', (req, res) => {
+  const query = `
+    SELECT p.id, p.name, p.price, p.image, p.manufacturer, p.category, COUNT(oi.product_id) AS total_sold
+    FROM order_items oi
+    JOIN products p ON oi.product_id = p.id
+    GROUP BY oi.product_id, p.name
+    ORDER BY total_sold DESC
+    LIMIT 5;
+  `;
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      res.status(500).send('Server error');
+      return;
+    }
+    res.json(results);
+  });
+});
+
+
 // Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
