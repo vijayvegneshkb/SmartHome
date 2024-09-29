@@ -75,6 +75,8 @@
     cursor: pointer;
     margin-top: 10px;
     transition: background-color 0.3s ease;
+    margin: 10px auto;
+    text-align: center;
   }
   
   .remove-button:hover {
@@ -101,6 +103,9 @@
     cursor: pointer;
     border-radius: 5px;
     transition: background-color 0.3s ease;
+    margin-bottom: 0;
+    width: unset;
+    display: inline-block;
   }
   
   .checkout-button:hover {

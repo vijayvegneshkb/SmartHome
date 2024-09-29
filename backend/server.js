@@ -521,3 +521,55 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+
+const { MongoClient } = require('mongodb');
+
+// MongoDB connection URI
+const uri = 'mongodb://localhost:27017';
+const client = new MongoClient(uri);
+
+// Connect to MongoDB
+client.connect(err => {
+  if (err) {
+    console.error('MongoDB connection error:', err);
+    return;
+  }
+  console.log('Connected to MongoDB');
+});
+
+const reviewsCollection = client.db('smart-home').collection('reviews');
+
+// API for submitting a review
+app.post('/reviews', async (req, res) => {
+  const reviewData = req.body;
+
+  try {
+    const result = await reviewsCollection.insertOne(reviewData);
+    res.status(201).json({
+      message: 'Review submitted successfully',
+      reviewId: result.insertedId
+    });
+  } catch (error) {
+    console.error('Error saving review:', error);
+    res.status(500).json({ message: 'Error submitting review' });
+  }
+});
+
+app.get('/reviews/:productId', async (req, res) => {
+  //console.log('Fetching reviews for product ID:', req.params.productId);
+  const productId = parseInt(req.params.productId, 10); // Ensure it's treated as a number
+
+  try {
+      const reviews = await reviewsCollection.find({ productId }).toArray();
+      //console.log('Retrieved Reviews:', reviews); // Debugging line
+      if (reviews.length === 0) {
+          return res.status(404).json({ message: 'No reviews found for this product' });
+      }
+      res.status(200).json(reviews);
+  } catch (error) {
+      console.error('Error fetching reviews:', error);
+      res.status(500).json({ message: 'Error fetching reviews' });
+  }
+});
+

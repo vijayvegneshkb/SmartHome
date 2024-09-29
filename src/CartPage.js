@@ -22,6 +22,15 @@ const CartPage = ({ cartItems, setCart }) => {
     setCart(storedCartItems);
   }, [setCart]);
 
+  const importImage = (imageName) => {
+    try {
+      return require(`./assets/images/${imageName}`);
+    } catch (error) {
+      console.error(`Error loading image ${imageName}:`, error);
+      return null; // Return a default image or null if the image cannot be loaded
+    }
+  };
+
   return (
     <div className="cart-page">
       <h1 className="cart-title">Your Cart</h1>
@@ -34,7 +43,7 @@ const CartPage = ({ cartItems, setCart }) => {
           <div className="product-grid">
             {cartItems.map((item, index) => (
               <div key={index} className="product-card">
-                <img src={item.image} alt={item.name} className="product-image" />
+                <img src={importImage(item.image)} alt={item.name} className="product-image" />
                 <div className="product-info">
                   <h2 className="product-name">{item.name}</h2>
                   <p className="manufacturer">Manufacturer: {item.manufacturer}</p>

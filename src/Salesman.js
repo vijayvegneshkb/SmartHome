@@ -62,7 +62,7 @@ const Salesman = () => {
         street: updatedStreet,
         city: updatedCity,
         state: updatedState,
-        zipcode: updatedZipcode,
+        zip_code: updatedZipcode,
         total_amount: updatedTotalAmount,
         delivery_option: updatedDeliveryOption,
         delivery_date: updatedDeliveryDate,
