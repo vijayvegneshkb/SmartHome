@@ -47,6 +47,9 @@
     cursor: pointer;
     font-weight: bold;
     transition: background-color 0.3s ease;
+    align-self: center;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 .logout-button:hover {
@@ -213,3 +216,80 @@
     transform: translateY(1px); /* Pressed effect */
   }
   
+  .home-header {
+    display: flex;
+    flex-direction: row; /* Stack items vertically */
+    align-items: flex-start; /* Align items to the start */
+    padding: 10px;
+  }
+  
+  .logo-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .search-bar {
+    display: flex;
+    align-items: center;
+    margin: 10px 0; /* Space around the search bar */
+    margin-bottom: 0;
+  }
+  
+  .search-input {
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 5px; /* Space between input and button */
+    margin-bottom: 0;
+  }
+  
+  .search-button {
+    padding: 8px 12px;
+    font-size: 16px;
+    background-color: #4CAF50; /* Change to your preferred color */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 0;
+  }
+  
+  .search-button:hover {
+    background-color: #45a049; /* Darker shade for hover effect */
+  }
+  
+  .user-info {
+    display: flex;
+    align-items: center;
+    margin-top: 10px; /* Space above user info */
+  }
+  
+  .user-greeting {
+    margin-right: 10px; /* Space between greeting and logout button */
+  }
+  
+  .rightheader{
+    margin-top: 3rem;
+  }
+
+  .suggestions-list {
+    position: absolute; /* Position relative to the search bar */
+    background-color: white; /* Dropdown background color */
+    border: 1px solid #ccc; /* Border for dropdown */
+    max-height: 200px; /* Max height for dropdown */
+    overflow-y: auto; /* Enable scrolling */
+    z-index: 1000; /* Ensure it appears above other elements */
+    list-style: none; /* Remove list styles */
+    padding: 0; /* Remove padding */
+    margin: 0; /* Remove margin */
+}
+
+.suggestions-list li {
+    padding: 10px; /* Padding for list items */
+    cursor: pointer; /* Pointer cursor on hover */
+}
+
+.suggestions-list li:hover {
+    background-color: #f0f0f0; /* Highlight on hover */
+}

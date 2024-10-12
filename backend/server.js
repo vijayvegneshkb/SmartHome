@@ -126,6 +126,7 @@ app.get('/products', (req, res) => {
     }
   });
 });
+
 // API for fetching a specific product by ID
 app.get('/products/:id', (req, res) => {
   const productId = parseInt(req.params.id);
@@ -228,6 +229,26 @@ app.delete('/products/:id', (req, res) => {
 
       res.json({ message: 'Product deleted successfully' });
     });
+  });
+});
+
+
+app.get('/productsuggestions', (req, res) => {
+  // Get the query parameter from the request
+  const searchTerm = req.query.query; // Get the search term from the query string
+  const qy = "SELECT name FROM products WHERE name LIKE ?"; // Use a placeholder for the query
+
+  // Add wildcards to the search term
+  const searchQuery = `${searchTerm}%`;
+
+  // Execute the query with the search term
+  db.query(qy, [searchQuery], (err, result) => {
+    if (err) {
+      console.error(err); // Log the error for debugging
+      res.status(500).send(err); // Send error response
+    } else {
+      res.json(result); // Send results as JSON
+    }
   });
 });
 

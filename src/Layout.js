@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom'; // Import useLocation
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import logo from './assets/logo.png';
 import './Home.css';
 
 const Layout = ({ children, cart, setCart, addToCart }) => {
   const [categories, setCategories] = useState({});
+  const [searchQuery, setSearchQuery] = useState(''); // State for search input
+  const [suggestions, setSuggestions] = useState([]); // State for search suggestions
   const navigate = useNavigate();
-  const location = useLocation(); // Use the useLocation hook to get the current path
+  const location = useLocation();
 
   // Retrieve the user object from localStorage and parse it
   const savedUser = localStorage.getItem('user');
@@ -35,6 +37,39 @@ const Layout = ({ children, cart, setCart, addToCart }) => {
     alert('You have been logged out');
   };
 
+  const handleSearchSubmit = (e) => {
+    e.preventDefault(); // Prevent the default form submission
+    if (searchQuery) {
+      navigate(`/search?query=${encodeURIComponent(searchQuery)}`); // Redirect to search results page
+      setSearchQuery(''); // Clear the search input
+      setSuggestions([]); // Clear suggestions after search
+    }
+  };
+
+  const handleSearchChange = async (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+
+    // If there is a value, fetch suggestions
+    if (value) {
+      try {
+        const response = await fetch(`http://localhost:5000/productsuggestions?query=${encodeURIComponent(value)}`);
+        const data = await response.json();
+        setSuggestions(data); // Update suggestions
+      } catch (error) {
+        console.error('Error fetching suggestions:', error);
+      }
+    } else {
+      setSuggestions([]); // Clear suggestions if input is empty
+    }
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    setSearchQuery(suggestion.name); // Set the input to the clicked suggestion
+    setSuggestions([]); // Clear suggestions
+    navigate(`/search?query=${encodeURIComponent(suggestion.name)}`); // Navigate to search results
+  };
+
   const cartItemsCount = cart.length;
 
   return (
@@ -45,12 +80,40 @@ const Layout = ({ children, cart, setCart, addToCart }) => {
           <img src={logo} alt="Smart Home Logo" className="logo" />
           <h1 className="logo-name">SMART HOME</h1>
         </div>
-        {user && user.username && <span className="user-greeting">Hello, {user.username}</span>}
-        {user && (
-          <button onClick={handleLogout} className="logout-button">
-            Logout
-          </button>
-        )}
+        <div className="rightheader">
+          {/* Search Bar */}
+          <form onSubmit={handleSearchSubmit} className="search-bar">
+            <input 
+              type="text" 
+              value={searchQuery} 
+              onChange={handleSearchChange} // Handle search input changes
+              placeholder="Search products..." 
+              className="search-input" 
+            />
+            <button type="submit" className="search-button">Search</button>
+          </form>
+
+          {/* Autocomplete Suggestions */}
+          {suggestions.length > 0 && (
+            <ul className="suggestions-list">
+              {suggestions.map((suggestion, index) => (
+                <li key={index} onClick={() => handleSuggestionClick(suggestion)}>
+                  {suggestion.name}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {/* User Info Section */}
+          <div className="user-info">
+            {user && user.username && <span className="user-greeting">Hello, {user.username}</span>}
+            {user && (
+              <button onClick={handleLogout} className="logout-button">
+                Logout
+              </button>
+            )}
+          </div>
+        </div>
       </header>
 
       {/* Top Menu Bar - Conditional Rendering */}
