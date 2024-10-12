@@ -12,7 +12,9 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.21.0",
+    "fs": "^0.0.1-security",
     "mongodb": "^6.9.0",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "xml2js": "^0.6.2"
   }
 }

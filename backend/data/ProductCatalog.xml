@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProductCatalog>
+    <Product>
+        <name>Google Nest Doorbell</name>
+        <price>189.99</price>
+        <image>google_nest_doorbell.jpg</image>
+        <manufacturer>Google</manufacturer>
+        <category>Doorbells</category>
+    </Product>
+    <Product>
+        <name>Ring Video Doorbell</name>
+        <price>199.99</price>
+        <image>ring_video_doorbell.jpg</image>
+        <manufacturer>Ring</manufacturer>
+        <category>Doorbells</category>
+    </Product>
+    <Product>
+        <name>Google Nest Doorbell Pro</name>
+        <price>299.99</price>
+        <image>google_nest_doorbell_pro.jpg</image>
+        <manufacturer>Google</manufacturer>
+        <category>Doorbells</category>
+    </Product>
+    <Product>
+        <name>Eufy Video Doorbell</name>
+        <price>159.99</price>
+        <image>eufy_video_doorbell.jpg</image>
+        <manufacturer>Eufy</manufacturer>
+        <category>Doorbells</category>
+    </Product>
+    <Product>
+        <name>Ring Video Doorbell Pro</name>
+        <price>249.99</price>
+        <image>ring_video_doorbell_pro.jpg</image>
+        <manufacturer>Ring</manufacturer>
+        <category>Doorbells</category>
+    </Product>
+    <Product>
+        <name>Google Nest Doorlock</name>
+        <price>199.99</price>
+        <image>google_nest_doorlock.jpg</image>
+        <manufacturer>Google</manufacturer>
+        <category>Doorlocks</category>
+    </Product>
+    <Product>
+        <name>August Smart Lock</name>
+        <price>229.99</price>
+        <image>august_smart_lock.jpg</image>
+        <manufacturer>August</manufacturer>
+        <category>Doorlocks</category>
+    </Product>
+    <Product>
+        <name>Schlage Connect</name>
+        <price>189.99</price>
+        <image>schlage_connect.jpg</image>
+        <manufacturer>Schlage</manufacturer>
+        <category>Doorlocks</category>
+    </Product>
+    <Product>
+        <name>Yale Assure Lock</name>
+        <price>219.99</price>
+        <image>yale_assure_lock.jpg</image>
+        <manufacturer>Yale</manufacturer>
+        <category>Doorlocks</category>
+    </Product>
+    <Product>
+        <name>August Smart Lock Pro</name>
+        <price>259.99</price>
+        <image>august_smart_lock_pro.jpg</image>
+        <manufacturer>August</manufacturer>
+        <category>Doorlocks</category>
+    </Product>
+    <Product>
+        <name>Google Home Max</name>
+        <price>299.99</price>
+        <image>google_home_max.jpg</image>
+        <manufacturer>Google</manufacturer>
+        <category>Speakers</category>
+    </Product>
+    <Product>
+        <name>Sonos One</name>
+        <price>199.99</price>
+        <image>sonos_one.jpg</image>
+        <manufacturer>Sonos</manufacturer>
+        <category>Speakers</category>
+    </Product>
+    <Product>
+        <name>Google Nest Audio</name>
+        <price>129.99</price>
+        <image>google_nest_audio.jpg</image>
+        <manufacturer>Google</manufacturer>
+        <category>Speakers</category>
+    </Product>
+    <Product>
+        <name>Apple HomePod</name>
+        <price>299.99</price>
+        <image>apple_homepod.jpg</image>
+        <manufacturer>Apple</manufacturer>
+        <category>Speakers</category>
+    </Product>
+    <Product>
+        <name>Sonos Move</name>
+        <price>399.99</price>
+        <image>sonos_move.jpg</image>
+        <manufacturer>Sonos</manufacturer>
+        <category>Speakers</category>
+    </Product>
+    <Product>
+        <name>Google Nest Lightstrip</name>
+        <price>149.99</price>
+        <image>google_nest_lightstrip.jpg</image>
+        <manufacturer>Google</manufacturer>
+        <category>Lightings</category>
+    </Product>
+    <Product>
+        <name>Philips Hue Bulb</name>
+        <price>79.99</price>
+        <image>philips_hue_bulb.jpg</image>
+        <manufacturer>Philips</manufacturer>
+        <category>Lightings</category>
+    </Product>
+    <Product>
+        <name>Amazon Echo Dot</name>
+        <price>49.99</price>
+        <image>amazon_echo_dot.jpg</image>
+        <manufacturer>Amazon</manufacturer>
+        <category>Lightings</category>
+    </Product>
+    <Product>
+        <name>Philips Hue Lightstrip</name>
+        <price>149.99</price>
+        <image>philips_hue_lightstrip.jpg</image>
+        <manufacturer>Philips</manufacturer>
+        <category>Lightings</category>
+    </Product>
+    <Product>
+        <name>Amazon Echo Show</name>
+        <price>229.99</price>
+        <image>amazon_echo_show.jpg</image>
+        <manufacturer>Amazon</manufacturer>
+        <category>Lightings</category>
+    </Product>
+    <Product>
+        <name>Google Nest Thermostat</name>
+        <price>249.99</price>
+        <image>google_nest_thermostat.jpg</image>
+        <manufacturer>Google</manufacturer>
+        <category>Thermostats</category>
+    </Product>
+    <Product>
+        <name>Ecobee Smart Thermostat</name>
+        <price>299.99</price>
+        <image>ecobee_smart_thermostat.jpg</image>
+        <manufacturer>Ecobee</manufacturer>
+        <category>Thermostats</category>
+    </Product>
+    <Product>
+        <name>Honeywell Home Thermostat</name>
+        <price>199.99</price>
+        <image>honeywell_home_thermostat.jpg</image>
+        <manufacturer>Honeywell</manufacturer>
+        <category>Thermostats</category>
+    </Product>
+    <Product>
+        <name>Google Nest Learning Thermostat</name>
+        <price>349.99</price>
+        <image>google_nest_learning_thermostat.jpg</image>
+        <manufacturer>Google</manufacturer>
+        <category>Thermostats</category>
+    </Product>
+    <Product>
+        <name>Tado Smart Thermostat</name>
+        <price>229.99</price>
+        <image>tado_smart_thermostat.jpg</image>
+        <manufacturer>Tado</manufacturer>
+        <category>Thermostats</category>
+    </Product>
+</ProductCatalog>

@@ -1,6 +1,9 @@
 const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
+const fs = require('fs');
+const xml2js = require('xml2js');
+const util = require('util');
 
 const app = express();
 app.use(cors());
@@ -13,13 +16,104 @@ const db = mysql.createConnection({
   database: 'smarthomes_db'
 });
 
+let productHashMap = {};
+
 db.connect((err) => {
   if (err) {
     console.log(err);
   } else {
     console.log('Connected to MySQL');
+    // Parse XML into a hashmap and update the database
+    parseXMLToHashMap(() => {
+      updateProductsFromHashMap(); // Update database from hashmap
+    });
   }
 });
+
+// Utility to run SQL queries with promises (to avoid callback hell)
+const query = util.promisify(db.query).bind(db);
+
+// Function to check if a product exists in the database
+async function productExists(name) {
+  const result = await query('SELECT * FROM products WHERE name = ?', [name]);
+  return result.length > 0;
+}
+
+// Function to read and parse XML file into a hashmap
+function parseXMLToHashMap(callback) {
+  const filePath = './data/ProductCatalog.xml'; // Update with actual path
+
+  // Read XML file
+  fs.readFile(filePath, (err, data) => {
+      if (err) {
+          console.error('Error reading XML file:', err);
+          return;
+      }
+
+      // Parse XML data
+      const parser = new xml2js.Parser();
+      parser.parseString(data, (err, result) => {
+          if (err) {
+              console.error('Error parsing XML:', err);
+              return;
+          }
+
+          const products = result.ProductCatalog.Product;
+          productHashMap = {}; // Clear the hashmap before repopulating
+
+          // Populate the hashmap with product data
+          for (const product of products) {
+              const name = product.name[0];
+              const price = parseFloat(product.price[0]);
+              const image = product.image[0];
+              const manufacturer = product.manufacturer[0];
+              const category = product.category[0];
+
+              // Add product to the hashmap, using the product name as the key
+              productHashMap[name] = {
+                  price,
+                  image,
+                  manufacturer,
+                  category
+              };
+          }
+
+          callback(); // Proceed to update the database
+      });
+  });
+}
+
+// Function to update the products table from the hashmap
+async function updateProductsFromHashMap() {
+  try {
+      // Iterate through the hashmap
+      for (const name in productHashMap) {
+          const product = productHashMap[name];
+          const { price, image, manufacturer, category } = product;
+
+          // Check if the product already exists in the database
+          const exists = await productExists(name);
+
+          if (exists) {
+              // If the product exists, update it
+              await query(
+                  'UPDATE products SET price = ?, image = ?, manufacturer = ?, category = ? WHERE name = ?',
+                  [price, image, manufacturer, category, name]
+              );
+              console.log(`Updated product: ${name}`);
+          } else {
+              // If the product does not exist, insert it
+              await query(
+                  'INSERT INTO products (name, price, image, manufacturer, category) VALUES (?, ?, ?, ?, ?)',
+                  [name, price, image, manufacturer, category]
+              );
+              console.log(`Inserted new product: ${name}`);
+          }
+      }
+  } catch (error) {
+      console.error('Error processing products from hashmap:', error);
+  }
+}
 
 // API for fetching all products
 app.get('/products', (req, res) => {
@@ -58,7 +152,11 @@ app.post('/products', (req, res) => {
     if (err) {
       console.error(err);
       return res.status(500).json({ message: 'Error adding product' });
+    }else{
+      productHashMap[name] = { price, image, manufacturer, category };
     }
+
+    //console.log("producthashmap after add", productHashMap);
     
     res.status(201).json({
       id: result.insertId,
@@ -83,6 +181,8 @@ app.put('/products/:id', (req, res) => {
     } else if (result.affectedRows === 0) {
       res.status(404).send('Product not found');
     } else {
+      productHashMap[name] = { price, image, manufacturer, category };
+      //console.log("producthashmap after uodate", productHashMap);
       res.json({ id: productId, name, price, image, manufacturer, category });
     }
   });
@@ -90,21 +190,44 @@ app.put('/products/:id', (req, res) => {
 
 // API for deleting a specific product by ID
 app.delete('/products/:id', (req, res) => {
-  const productId = req.params.id;
+  const productId = parseInt(req.params.id);
   
-  const query = 'DELETE FROM products WHERE id = ?';
+  // First, find the product by ID to get its name before deletion
+  const query = 'SELECT name FROM products WHERE id = ?';
   
   db.query(query, [productId], (err, result) => {
     if (err) {
       console.error(err);
-      return res.status(500).json({ message: 'Error deleting product' });
+      return res.status(500).json({ message: 'Error finding product' });
     }
-    
-    if (result.affectedRows === 0) {
+
+    if (result.length === 0) {
       return res.status(404).json({ message: 'Product not found' });
     }
     
-    res.json({ message: 'Product deleted successfully' });
+    const productName = result[0].name;
+
+    // Proceed to delete the product from the database
+    const deleteQuery = 'DELETE FROM products WHERE id = ?';
+    
+    db.query(deleteQuery, [productId], (err, result) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'Error deleting product' });
+      }
+      
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: 'Product not found' });
+      }
+      
+      // Now, delete the product from the hashmap
+      if (productHashMap[productName]) {
+        delete productHashMap[productName];
+        //console.log(`Removed product from hashmap: ${productName}`);
+      }
+
+      res.json({ message: 'Product deleted successfully' });
+    });
   });
 });
 
