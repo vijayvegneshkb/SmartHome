@@ -57,7 +57,7 @@ const InventoryReport = () => {
         <Chart
           width={'800px'}
           height={'500px'}
-          chartType="Bar"
+          chartType="Bar" // Use Bar chart for horizontal display
           loader={<div>Loading Chart...</div>}
           data={[
             ['Product Name', 'Available Items'],
@@ -74,6 +74,8 @@ const InventoryReport = () => {
               title: 'Product Name',
             },
             colors: ['#4285F4'],
+            bars: 'horizontal', // Set to horizontal bars
+            //legend: { position: 'none' }, // Optional: Hide the legend
           }}
         />
       </div>
