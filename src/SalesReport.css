@@ -19,7 +19,7 @@ h1 {
 h3 {
     color: #34495e; /* Darker subtitle color */
     margin-bottom: 15px; /* Spacing */
-    border-bottom: 2px solid #e74c3c; /* Bottom border */
+    /*border-bottom: 2px solid #e74c3c; *//* Bottom border */
     padding-bottom: 5px; /* Padding */
 }
 
