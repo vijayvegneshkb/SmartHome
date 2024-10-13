@@ -17,6 +17,7 @@ const db = mysql.createConnection({
 });
 
 let productHashMap = {};
+let inventoryHashMap = {}; 
 
 db.connect((err) => {
   if (err) {
@@ -25,7 +26,7 @@ db.connect((err) => {
     console.log('Connected to MySQL');
     // Parse XML into a hashmap and update the database
     parseXMLToHashMap(() => {
-      updateProductsFromHashMap(); // Update database from hashmap
+      updateProductsAndInventory(); // Call the new combined function to ensure correct order
     });
   }
 });
@@ -35,8 +36,8 @@ const query = util.promisify(db.query).bind(db);
 
 // Function to check if a product exists in the database
 async function productExists(name) {
-  const result = await query('SELECT * FROM products WHERE name = ?', [name]);
-  return result.length > 0;
+  const result = await query('SELECT id FROM products WHERE name = ?', [name]);
+  return result.length > 0 ? result[0].id : null;
 }
 
 // Function to read and parse XML file into a hashmap
@@ -60,6 +61,7 @@ function parseXMLToHashMap(callback) {
 
           const products = result.ProductCatalog.Product;
           productHashMap = {}; // Clear the hashmap before repopulating
+          inventoryHashMap = {};  // Clear existing inventory
 
           // Populate the hashmap with product data
           for (const product of products) {
@@ -68,6 +70,9 @@ function parseXMLToHashMap(callback) {
               const image = product.image[0];
               const manufacturer = product.manufacturer[0];
               const category = product.category[0];
+              const quantity_available = parseInt(product.quantity_available[0]);
+              const on_sale = parseInt(product.on_sale[0]);
+              const rebate = parseFloat(product.rebate[0]);
 
               // Add product to the hashmap, using the product name as the key
               productHashMap[name] = {
@@ -76,6 +81,8 @@ function parseXMLToHashMap(callback) {
                   manufacturer,
                   category
               };
+              // Add product to the inventory hashmap, using the product name as the key
+              inventoryHashMap[name] = { quantity_available, on_sale, rebate };
           }
 
           callback(); // Proceed to update the database
@@ -83,37 +90,63 @@ function parseXMLToHashMap(callback) {
   });
 }
 
-// Function to update the products table from the hashmap
-async function updateProductsFromHashMap() {
+// Combined function to update products first and then inventory
+async function updateProductsAndInventory() {
   try {
-      // Iterate through the hashmap
-      for (const name in productHashMap) {
-          const product = productHashMap[name];
-          const { price, image, manufacturer, category } = product;
+    // First, update or insert products
+    for (const name in productHashMap) {
+      const product = productHashMap[name];
+      const { price, image, manufacturer, category } = product;
 
-          // Check if the product already exists in the database
-          const exists = await productExists(name);
+      let productId = await productExists(name);
 
-          if (exists) {
-              // If the product exists, update it
-              await query(
-                  'UPDATE products SET price = ?, image = ?, manufacturer = ?, category = ? WHERE name = ?',
-                  [price, image, manufacturer, category, name]
-              );
-              console.log(`Updated product: ${name}`);
-          } else {
-              // If the product does not exist, insert it
-              await query(
-                  'INSERT INTO products (name, price, image, manufacturer, category) VALUES (?, ?, ?, ?, ?)',
-                  [name, price, image, manufacturer, category]
-              );
-              console.log(`Inserted new product: ${name}`);
-          }
+      if (productId) {
+        // Update product if it exists
+        await query(
+          'UPDATE products SET price = ?, image = ?, manufacturer = ?, category = ? WHERE id = ?',
+          [price, image, manufacturer, category, productId]
+        );
+        console.log(`Updated product: ${name}`);
+      } else {
+        // Insert new product and retrieve product_id
+        const result = await query(
+          'INSERT INTO products (name, price, image, manufacturer, category) VALUES (?, ?, ?, ?, ?)',
+          [name, price, image, manufacturer, category]
+        );
+        productId = result.insertId; // Get the inserted product_id
+        console.log(`Inserted new product: ${name}, product_id: ${productId}`);
       }
+
+      // Now update the inventory using the product_id
+      const inventory = inventoryHashMap[name];
+      const { quantity_available, on_sale, rebate } = inventory;
+
+      const inventoryExists = await query(
+        'SELECT * FROM inventory WHERE product_id = ?',
+        [productId]
+      );
+
+      if (inventoryExists.length > 0) {
+        // Update existing inventory record
+        await query(
+          'UPDATE inventory SET quantity_available = ?, on_sale = ?, rebate = ? WHERE product_id = ?',
+          [quantity_available, on_sale, rebate, productId]
+        );
+        console.log(`Updated inventory for product: ${name}`);
+      } else {
+        // Insert new inventory record
+        await query(
+          'INSERT INTO inventory (product_id, quantity_available, on_sale, rebate) VALUES (?, ?, ?, ?)',
+          [productId, quantity_available, on_sale, rebate]
+        );
+        console.log(`Inserted inventory for product: ${name}`);
+      }
+    }
   } catch (error) {
-      console.error('Error processing products from hashmap:', error);
+    console.error('Error updating products and inventory:', error);
   }
 }
+
 
 // API for fetching all products
 app.get('/products', (req, res) => {
@@ -144,31 +177,89 @@ app.get('/products/:id', (req, res) => {
 });
 
 // API for adding a new product
+// app.post('/products', (req, res) => {
+//   const { name, price, image, manufacturer, category } = req.body;
+
+//   // Step 1: Update productHashMap first
+//   productHashMap[name] = { price, image, manufacturer, category };
+
+//   console.log("Product Hashmap after adding new product", productHashMap);
+
+//   // Step 2: Extract the product data from the hashmap
+//   const productData = productHashMap[name];
+
+//   // Step 3: Insert the product data into MySQL database
+//   const query = 'INSERT INTO products (name, price, image, manufacturer, category) VALUES (?, ?, ?, ?, ?)';
+  
+//   db.query(query, [name, productData.price, productData.image, productData.manufacturer, productData.category], (err, result) => {
+//     if (err) {
+//       console.error(err);
+//       return res.status(500).json({ message: 'Error adding product' });
+//     }
+
+//     res.status(201).json({
+//       id: result.insertId,
+//       name,
+//       price: productData.price,
+//       image: productData.image,
+//       manufacturer: productData.manufacturer,
+//       category: productData.category,
+//     });
+//   });
+// });
+
 app.post('/products', (req, res) => {
-  const { name, price, image, manufacturer, category } = req.body;
+  const { 
+    name, 
+    price, 
+    image, 
+    manufacturer, 
+    category, 
+    quantity_available, 
+    on_sale, 
+    rebate 
+  } = req.body;
 
-  // Step 1: Update productHashMap first
+  // Step 1: Update productHashMap
   productHashMap[name] = { price, image, manufacturer, category };
+  
+  // Step 2: Update inventoryHashMap
+  inventoryHashMap[name] = { quantity_available, on_sale, rebate };
 
-  // Step 2: Extract the product data from the hashmap
-  const productData = productHashMap[name];
+  console.log("Product Hashmap after adding new product:", productHashMap);
+  console.log("Inventory Hashmap after adding new product:", inventoryHashMap);
 
   // Step 3: Insert the product data into MySQL database
-  const query = 'INSERT INTO products (name, price, image, manufacturer, category) VALUES (?, ?, ?, ?, ?)';
+  const productQuery = 'INSERT INTO products (name, price, image, manufacturer, category) VALUES (?, ?, ?, ?, ?)';
   
-  db.query(query, [name, productData.price, productData.image, productData.manufacturer, productData.category], (err, result) => {
+  db.query(productQuery, [name, price, image, manufacturer, category], (err, result) => {
     if (err) {
       console.error(err);
-      return res.status(500).json({ message: 'Error adding product' });
+      return res.status(500).json({ message: 'Error adding product to products table' });
     }
 
-    res.status(201).json({
-      id: result.insertId,
-      name,
-      price: productData.price,
-      image: productData.image,
-      manufacturer: productData.manufacturer,
-      category: productData.category,
+    // Step 4: Now insert the corresponding inventory data
+    const inventoryQuery = 'INSERT INTO inventory (product_id, quantity_available, on_sale, rebate) VALUES (?, ?, ?, ?)';
+    
+    // Use the last inserted product ID for the inventory record
+    const productId = result.insertId; // Get the ID of the newly inserted product
+    db.query(inventoryQuery, [productId, quantity_available, on_sale, rebate], (err) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'Error adding product to inventory table' });
+      }
+
+      res.status(201).json({
+        id: productId,
+        name,
+        price,
+        image,
+        manufacturer,
+        category,
+        quantity_available,
+        on_sale,
+        rebate
+      });
     });
   });
 });
@@ -181,6 +272,8 @@ app.put('/products/:id', (req, res) => {
 
   // Step 1: Update the product in the hashmap first
   productHashMap[name] = { price, image, manufacturer, category };
+
+  console.log("Product Hashmap after updating new product", productHashMap);
 
   // Step 2: Extract the product data from the hashmap
   const productData = productHashMap[name];
@@ -222,28 +315,40 @@ app.delete('/products/:id', (req, res) => {
     // Step 2: Delete the product from the hashmap first
     if (productHashMap[productName]) {
       delete productHashMap[productName];
-      //console.log(`Removed product from hashmap: ${productName}`);
+      console.log("Product Hashmap after deleting product", productHashMap);
+      console.log(`Removed product from hashmap: ${productName}`);
     } else {
       return res.status(404).json({ message: 'Product not found in hashmap' });
     }
 
-    // Step 3: Proceed to delete the product from the database using the product name (from hashmap deletion)
-    const deleteQuery = 'DELETE FROM products WHERE id = ?';
+    // Step 3: Delete the inventory record corresponding to the product
+    const deleteInventoryQuery = 'DELETE FROM inventory WHERE product_id = ?';
     
-    db.query(deleteQuery, [productId], (err, result) => {
+    db.query(deleteInventoryQuery, [productId], (err) => {
       if (err) {
         console.error(err);
-        return res.status(500).json({ message: 'Error deleting product from database' });
-      }
-      
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ message: 'Product not found in database' });
+        return res.status(500).json({ message: 'Error deleting product from inventory' });
       }
 
-      res.json({ message: 'Product deleted successfully from both hashmap and database' });
+      // Step 4: Proceed to delete the product from the database
+      const deleteProductQuery = 'DELETE FROM products WHERE id = ?';
+      
+      db.query(deleteProductQuery, [productId], (err, result) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ message: 'Error deleting product from database' });
+        }
+        
+        if (result.affectedRows === 0) {
+          return res.status(404).json({ message: 'Product not found in database' });
+        }
+
+        res.json({ message: 'Product deleted successfully from both hashmap and database' });
+      });
     });
   });
 });
+
 
 
 app.get('/productsuggestions', (req, res) => {

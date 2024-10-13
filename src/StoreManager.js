@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import './StoreManager.css';
 import { Link } from 'react-router-dom'; // Import Link for navigation
 
-
 const StoreManager = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true); // Loading state
@@ -11,7 +10,10 @@ const StoreManager = () => {
     price: '',
     image: '',
     manufacturer: '',
-    category: ''
+    category: '',
+    quantity_available: '',
+    on_sale: '',
+    rebate: ''
   });
   const [editingProductId, setEditingProductId] = useState(null);
   const [editingProduct, setEditingProduct] = useState({});
@@ -57,7 +59,10 @@ const StoreManager = () => {
           price: '',
           image: '',
           manufacturer: '',
-          category: ''
+          category: '',
+          quantity_available: '',
+          on_sale: '',
+          rebate: ''
         });
       }
     } catch (error) {
@@ -172,6 +177,33 @@ const StoreManager = () => {
             placeholder="Category"
             required
           />
+
+          {/* New fields for inventory */}
+          <input
+            type="number"
+            name="quantity_available"
+            value={newProduct.quantity_available}
+            onChange={handleInputChange}
+            placeholder="Quantity Available"
+            required
+          />
+          <input
+            type="number"
+            name="on_sale"
+            value={newProduct.on_sale}
+            onChange={handleInputChange}
+            placeholder="On Sale (1 for Yes, 0 for No)"
+            required
+          />
+          <input
+            type="number"
+            name="rebate"
+            value={newProduct.rebate}
+            onChange={handleInputChange}
+            placeholder="Rebate Amount"
+            required
+          />
+
           <button type="submit" className="add-button">Add Product</button>
         </form>
       </div>

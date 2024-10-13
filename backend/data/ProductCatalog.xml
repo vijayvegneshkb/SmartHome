@@ -6,6 +6,9 @@
         <image>google_nest_doorbell.jpg</image>
         <manufacturer>Google</manufacturer>
         <category>Doorbells</category>
+        <quantity_available>250</quantity_available>
+        <on_sale>1</on_sale>
+        <rebate>10.00</rebate>
     </Product>
     <Product>
         <name>Ring Video Doorbell</name>
@@ -13,6 +16,9 @@
         <image>ring_video_doorbell.jpg</image>
         <manufacturer>Ring</manufacturer>
         <category>Doorbells</category>
+        <quantity_available>230</quantity_available>
+        <on_sale>0</on_sale>
+        <rebate>5.00</rebate>
     </Product>
     <Product>
         <name>Google Nest Doorbell Pro</name>
@@ -20,6 +26,9 @@
         <image>google_nest_doorbell_pro.jpg</image>
         <manufacturer>Google</manufacturer>
         <category>Doorbells</category>
+        <quantity_available>240</quantity_available>
+        <on_sale>1</on_sale>
+        <rebate>15.00</rebate>
     </Product>
     <Product>
         <name>Eufy Video Doorbell</name>
@@ -27,6 +36,9 @@
         <image>eufy_video_doorbell.jpg</image>
         <manufacturer>Eufy</manufacturer>
         <category>Doorbells</category>
+        <quantity_available>260</quantity_available>
+        <on_sale>0</on_sale>
+        <rebate>7.50</rebate>
     </Product>
     <Product>
         <name>Ring Video Doorbell Pro</name>
@@ -34,6 +46,9 @@
         <image>ring_video_doorbell_pro.jpg</image>
         <manufacturer>Ring</manufacturer>
         <category>Doorbells</category>
+        <quantity_available>235</quantity_available>
+        <on_sale>1</on_sale>
+        <rebate>20.00</rebate>
     </Product>
     <Product>
         <name>Google Nest Doorlock</name>
@@ -41,6 +56,9 @@
         <image>google_nest_doorlock.jpg</image>
         <manufacturer>Google</manufacturer>
         <category>Doorlocks</category>
+        <quantity_available>225</quantity_available>
+        <on_sale>0</on_sale>
+        <rebate>12.00</rebate>
     </Product>
     <Product>
         <name>August Smart Lock</name>
@@ -48,6 +66,9 @@
         <image>august_smart_lock.jpg</image>
         <manufacturer>August</manufacturer>
         <category>Doorlocks</category>
+        <quantity_available>220</quantity_available>
+        <on_sale>0</on_sale>
+        <rebate>10.00</rebate>
     </Product>
     <Product>
         <name>Schlage Connect</name>
@@ -55,6 +76,9 @@
         <image>schlage_connect.jpg</image>
         <manufacturer>Schlage</manufacturer>
         <category>Doorlocks</category>
+        <quantity_available>245</quantity_available>
+        <on_sale>1</on_sale>
+        <rebate>8.00</rebate>
     </Product>
     <Product>
         <name>Yale Assure Lock</name>
@@ -62,6 +86,9 @@
         <image>yale_assure_lock.jpg</image>
         <manufacturer>Yale</manufacturer>
         <category>Doorlocks</category>
+        <quantity_available>215</quantity_available>
+        <on_sale>1</on_sale>
+        <rebate>10.50</rebate>
     </Product>
     <Product>
         <name>August Smart Lock Pro</name>
@@ -69,6 +96,9 @@
         <image>august_smart_lock_pro.jpg</image>
         <manufacturer>August</manufacturer>
         <category>Doorlocks</category>
+        <quantity_available>230</quantity_available>
+        <on_sale>0</on_sale>
+        <rebate>12.00</rebate>
     </Product>
     <Product>
         <name>Google Home Max</name>
@@ -76,6 +106,9 @@
         <image>google_home_max.jpg</image>
         <manufacturer>Google</manufacturer>
         <category>Speakers</category>
+        <quantity_available>250</quantity_available>
+        <on_sale>1</on_sale>
+        <rebate>20.00</rebate>
     </Product>
     <Product>
         <name>Sonos One</name>
@@ -83,6 +116,9 @@
         <image>sonos_one.jpg</image>
         <manufacturer>Sonos</manufacturer>
         <category>Speakers</category>
+        <quantity_available>235</quantity_available>
+        <on_sale>0</on_sale>
+        <rebate>15.00</rebate>
     </Product>
     <Product>
         <name>Google Nest Audio</name>
@@ -90,6 +126,9 @@
         <image>google_nest_audio.jpg</image>
         <manufacturer>Google</manufacturer>
         <category>Speakers</category>
+        <quantity_available>255</quantity_available>
+        <on_sale>1</on_sale>
+        <rebate>5.00</rebate>
     </Product>
     <Product>
         <name>Apple HomePod</name>
@@ -97,6 +136,9 @@
         <image>apple_homepod.jpg</image>
         <manufacturer>Apple</manufacturer>
         <category>Speakers</category>
+        <quantity_available>240</quantity_available>
+        <on_sale>1</on_sale>
+        <rebate>25.00</rebate>
     </Product>
     <Product>
         <name>Sonos Move</name>
@@ -104,6 +146,9 @@
         <image>sonos_move.jpg</image>
         <manufacturer>Sonos</manufacturer>
         <category>Speakers</category>
+        <quantity_available>220</quantity_available>
+        <on_sale>0</on_sale>
+        <rebate>30.00</rebate>
     </Product>
     <Product>
         <name>Google Nest Lightstrip</name>
@@ -111,6 +156,9 @@
         <image>google_nest_lightstrip.jpg</image>
         <manufacturer>Google</manufacturer>
         <category>Lightings</category>
+        <quantity_available>265</quantity_available>
+        <on_sale>0</on_sale>
+        <rebate>10.00</rebate>
     </Product>
     <Product>
         <name>Philips Hue Bulb</name>
@@ -118,6 +166,9 @@
         <image>philips_hue_bulb.jpg</image>
         <manufacturer>Philips</manufacturer>
         <category>Lightings</category>
+        <quantity_available>300</quantity_available>
+        <on_sale>1</on_sale>
+        <rebate>5.00</rebate>
     </Product>
     <Product>
         <name>Amazon Echo Dot</name>
@@ -125,6 +176,9 @@
         <image>amazon_echo_dot.jpg</image>
         <manufacturer>Amazon</manufacturer>
         <category>Lightings</category>
+        <quantity_available>280</quantity_available>
+        <on_sale>0</on_sale>
+        <rebate>3.00</rebate>
     </Product>
     <Product>
         <name>Philips Hue Lightstrip</name>
@@ -132,6 +186,9 @@
         <image>philips_hue_lightstrip.jpg</image>
         <manufacturer>Philips</manufacturer>
         <category>Lightings</category>
+        <quantity_available>245</quantity_available>
+        <on_sale>1</on_sale>
+        <rebate>7.50</rebate>
     </Product>
     <Product>
         <name>Amazon Echo Show</name>
@@ -139,6 +196,9 @@
         <image>amazon_echo_show.jpg</image>
         <manufacturer>Amazon</manufacturer>
         <category>Lightings</category>
+        <quantity_available>225</quantity_available>
+        <on_sale>1</on_sale>
+        <rebate>15.00</rebate>
     </Product>
     <Product>
         <name>Google Nest Thermostat</name>
@@ -146,6 +206,9 @@
         <image>google_nest_thermostat.jpg</image>
         <manufacturer>Google</manufacturer>
         <category>Thermostats</category>
+        <quantity_available>235</quantity_available>
+        <on_sale>0</on_sale>
+        <rebate>10.00</rebate>
     </Product>
     <Product>
         <name>Ecobee Smart Thermostat</name>
@@ -153,6 +216,9 @@
         <image>ecobee_smart_thermostat.jpg</image>
         <manufacturer>Ecobee</manufacturer>
         <category>Thermostats</category>
+        <quantity_available>240</quantity_available>
+        <on_sale>1</on_sale>
+        <rebate>20.00</rebate>
     </Product>
     <Product>
         <name>Honeywell Home Thermostat</name>
@@ -160,6 +226,9 @@
         <image>honeywell_home_thermostat.jpg</image>
         <manufacturer>Honeywell</manufacturer>
         <category>Thermostats</category>
+        <quantity_available>230</quantity_available>
+        <on_sale>0</on_sale>
+        <rebate>8.00</rebate>
     </Product>
     <Product>
         <name>Google Nest Learning Thermostat</name>
@@ -167,6 +236,9 @@
         <image>google_nest_learning_thermostat.jpg</image>
         <manufacturer>Google</manufacturer>
         <category>Thermostats</category>
+        <quantity_available>280</quantity_available>
+        <on_sale>1</on_sale>
+        <rebate>18.00</rebate>
     </Product>
     <Product>
         <name>Tado Smart Thermostat</name>
@@ -174,5 +246,8 @@
         <image>tado_smart_thermostat.jpg</image>
         <manufacturer>Tado</manufacturer>
         <category>Thermostats</category>
+        <quantity_available>210</quantity_available>
+        <on_sale>1</on_sale>
+        <rebate>6.00</rebate>
     </Product>
 </ProductCatalog>
