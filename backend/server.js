@@ -357,7 +357,7 @@ app.get('/productsuggestions', (req, res) => {
   const qy = "SELECT name FROM products WHERE name LIKE ?"; // Use a placeholder for the query
 
   // Add wildcards to the search term
-  const searchQuery = `${searchTerm}%`;
+  const searchQuery = `%${searchTerm}%`;
 
   // Execute the query with the search term
   db.query(qy, [searchQuery], (err, result) => {
@@ -443,7 +443,7 @@ app.get('/search', (req, res) => {
   // SQL query to search for products matching the query
   const sql = `
     SELECT * FROM products
-    WHERE name LIKE '${sanitizedQuery.split('%20').join(' ')}%'`;
+    WHERE name LIKE '%${sanitizedQuery.split('%20').join(' ')}%'`;
 
   db.query(sql, (err, results) => {
     if (err) {

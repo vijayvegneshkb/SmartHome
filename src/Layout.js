@@ -68,6 +68,7 @@ const Layout = ({ children, cart, setCart, addToCart }) => {
     setSearchQuery(suggestion.name); // Set the input to the clicked suggestion
     setSuggestions([]); // Clear suggestions
     navigate(`/search?query=${encodeURIComponent(suggestion.name)}`); // Navigate to search results
+    setSearchQuery(''); 
   };
 
   const cartItemsCount = cart.length;
