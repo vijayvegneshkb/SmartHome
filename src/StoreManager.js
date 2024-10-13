@@ -114,7 +114,6 @@ const StoreManager = () => {
     <div className="store-manager">
       <h1>Store Manager</h1>
       <div className="navigation">
-        <h2>Reports</h2>
         <ul>
           <li>
             <Link to="/inventory">

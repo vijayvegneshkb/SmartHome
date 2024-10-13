@@ -1,0 +1,109 @@
+/* Main container */
+.sales-report {
+    font-family: 'Roboto', sans-serif; /* Updated font */
+    margin: 20px auto;
+    max-width: 1200px; /* Max width for better layout */
+    padding: 20px;
+    background-color: #f7f9fc; /* Light background for contrast */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+/* Headings */
+h1 {
+    text-align: center;
+    color: #2c3e50; /* Darker text color */
+    margin-bottom: 20px; /* Spacing */
+}
+
+h3 {
+    color: #34495e; /* Darker subtitle color */
+    margin-bottom: 15px; /* Spacing */
+    border-bottom: 2px solid #e74c3c; /* Bottom border */
+    padding-bottom: 5px; /* Padding */
+}
+
+/* Table styles */
+.sales-table {
+    width: 100%;
+    border-collapse: collapse; /* Merge borders */
+    margin-bottom: 40px; /* Spacing */
+}
+
+.sales-table th,
+.sales-table td {
+    padding: 12px; /* Increased padding */
+    text-align: left;
+    font-size: 16px; /* Font size */
+}
+
+/* Header styles */
+.sales-table th {
+    background-color: #e74c3c; /* Header background color */
+    color: white; /* Header text color */
+    position: sticky; /* Sticky header */
+    top: 0; /* Sticky position */
+}
+
+/* Zebra striping for table rows */
+.sales-table tr:nth-child(even) {
+    background-color: #f9f9f9; /* Light grey for even rows */
+}
+
+.sales-table tr:nth-child(odd) {
+    background-color: #ffffff; /* White for odd rows */
+}
+
+.sales-table tr:hover {
+    background-color: #f1c40f; /* Highlight on hover */
+    color: #333; /* Dark text color on hover */
+}
+
+/* Chart container */
+.chart-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+/* Loader styles */
+.loader {
+    text-align: center;
+    font-size: 18px;
+    color: #e74c3c; /* Loader color */
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 24px; /* Smaller font size on smaller screens */
+    }
+
+    h3 {
+        font-size: 20px; /* Smaller subtitle font size */
+    }
+
+    .sales-table th, 
+    .sales-table td {
+        font-size: 14px; /* Smaller table font size */
+    }
+
+    .chart-container {
+        flex-direction: column; /* Stack charts vertically on small screens */
+    }
+}
+
+/* Back link styles */
+.back-link {
+    text-decoration: none;
+    background-color: #4285F4;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.back-link:hover {
+    background-color: #3367D6;
+}

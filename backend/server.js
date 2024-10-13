@@ -288,6 +288,48 @@ app.get('/inventory', (req, res) => {
   });
 });
 
+app.get('/sales', (req, res) => {
+  const query = `
+    SELECT p.id, p.name AS productName, p.price AS productPrice, COUNT(oi.product_id) AS itemsSold
+    FROM products p
+    JOIN order_items oi ON p.id = oi.product_id
+    GROUP BY p.id
+  `;
+
+  db.query(query, (error, results) => {
+    if (error) {
+      console.error('Error fetching sales data:', error);
+      return res.status(500).json({ message: 'Internal Server Error' });
+    }
+    res.json(results);
+  });
+});
+
+// API endpoint to get daily sales transactions
+app.get('/daily-sales', (req, res) => {
+  const query = `
+    SELECT 
+      DATE(o.created_at) AS saleDate, 
+      SUM(oi.price * o.quantity) AS totalSales, 
+      SUM(o.quantity) AS totalItemsSold
+    FROM 
+      orders o
+    JOIN 
+      order_items oi ON o.id = oi.order_id
+    GROUP BY 
+      saleDate
+    ORDER BY 
+      saleDate
+  `;
+
+  db.query(query, (error, results) => {
+    if (error) {
+      console.error('Error fetching daily sales data:', error);
+      return res.status(500).json({ message: 'Internal Server Error' });
+    }
+    res.json(results);
+  });
+});
 
 // API for fetching users for login
 app.post('/login', (req, res) => {
