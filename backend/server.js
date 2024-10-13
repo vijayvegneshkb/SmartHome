@@ -414,17 +414,15 @@ app.get('/sales', (req, res) => {
 app.get('/daily-sales', (req, res) => {
   const query = `
     SELECT 
-      DATE(o.created_at) AS saleDate, 
-      SUM(oi.price * o.quantity) AS totalSales, 
-      SUM(o.quantity) AS totalItemsSold
+      DATE(created_at) AS saleDate, 
+      SUM(total_amount) AS totalSales, 
+      SUM(quantity) AS totalItemsSold
     FROM 
-      orders o
-    JOIN 
-      order_items oi ON o.id = oi.order_id
+      orders
     GROUP BY 
       saleDate
     ORDER BY 
-      saleDate
+      saleDate;
   `;
 
   db.query(query, (error, results) => {

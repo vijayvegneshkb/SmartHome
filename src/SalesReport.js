@@ -40,6 +40,10 @@ const SalesReport = () => {
     return date.toLocaleDateString('en-US', options);
   };
 
+  // Calculate total items sold and grand total sales
+  const totalItemsSold = salesData.reduce((total, item) => total + item.itemsSold, 0);
+  const grandTotalSales = salesData.reduce((total, item) => total + (item.productPrice * item.itemsSold), 0).toFixed(2);
+
   return (
     <div className="sales-report">
       <div className="header-container">
@@ -67,6 +71,13 @@ const SalesReport = () => {
               <td>${(item.productPrice * item.itemsSold).toFixed(2)}</td>
             </tr>
           ))}
+          {/* Total Row */}
+          <tr className="total-row">
+            <td><strong>Total</strong></td>
+            <td></td>
+            <td><strong>{totalItemsSold}</strong></td>
+            <td><strong>${grandTotalSales}</strong></td>
+          </tr>
         </tbody>
       </table>
 
@@ -78,8 +89,8 @@ const SalesReport = () => {
           height={'500px'}
           chartType="Bar"
           loader={<div>Loading Chart...</div>}
-          data={[
-            ['Product Name', 'Total Sales'],
+          data={[ 
+            ['Product Name', 'Total Sales($)'],
             ...salesData.map((item) => [item.productName, item.productPrice * item.itemsSold]),
           ]}
           options={{
