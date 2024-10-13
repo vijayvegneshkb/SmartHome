@@ -38,6 +38,7 @@ The MySQL database contains the following tables:
 - `orders`
 - `order_items`
 - `products`
+- `inventory`
 - `storelocations`
 - `users`
 
