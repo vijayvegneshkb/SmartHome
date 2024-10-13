@@ -146,54 +146,65 @@ app.get('/products/:id', (req, res) => {
 // API for adding a new product
 app.post('/products', (req, res) => {
   const { name, price, image, manufacturer, category } = req.body;
-  
+
+  // Step 1: Update productHashMap first
+  productHashMap[name] = { price, image, manufacturer, category };
+
+  // Step 2: Extract the product data from the hashmap
+  const productData = productHashMap[name];
+
+  // Step 3: Insert the product data into MySQL database
   const query = 'INSERT INTO products (name, price, image, manufacturer, category) VALUES (?, ?, ?, ?, ?)';
   
-  db.query(query, [name, price, image, manufacturer, category], (err, result) => {
+  db.query(query, [name, productData.price, productData.image, productData.manufacturer, productData.category], (err, result) => {
     if (err) {
       console.error(err);
       return res.status(500).json({ message: 'Error adding product' });
-    }else{
-      productHashMap[name] = { price, image, manufacturer, category };
     }
 
-    //console.log("producthashmap after add", productHashMap);
-    
     res.status(201).json({
       id: result.insertId,
       name,
-      price,
-      image,
-      manufacturer,
-      category,
+      price: productData.price,
+      image: productData.image,
+      manufacturer: productData.manufacturer,
+      category: productData.category,
     });
   });
 });
+
 
 // API for updating a specific product by ID
 app.put('/products/:id', (req, res) => {
   const productId = parseInt(req.params.id);
   const { name, price, image, manufacturer, category } = req.body;
-  const query = 'UPDATE products SET name = ?, price = ?, image = ?, manufacturer = ?, category = ? WHERE id = ?';
 
-  db.query(query, [name, price, image, manufacturer, category, productId], (err, result) => {
+  // Step 1: Update the product in the hashmap first
+  productHashMap[name] = { price, image, manufacturer, category };
+
+  // Step 2: Extract the product data from the hashmap
+  const productData = productHashMap[name];
+
+  // Step 3: Use the product data from the hashmap to update the MySQL database
+  const query = 'UPDATE products SET name = ?, price = ?, image = ?, manufacturer = ?, category = ? WHERE id = ?';
+  
+  db.query(query, [name, productData.price, productData.image, productData.manufacturer, productData.category, productId], (err, result) => {
     if (err) {
       res.status(500).send(err);
     } else if (result.affectedRows === 0) {
       res.status(404).send('Product not found');
     } else {
-      productHashMap[name] = { price, image, manufacturer, category };
-      //console.log("producthashmap after uodate", productHashMap);
-      res.json({ id: productId, name, price, image, manufacturer, category });
+      res.json({ id: productId, name, price: productData.price, image: productData.image, manufacturer: productData.manufacturer, category: productData.category });
     }
   });
 });
 
+
 // API for deleting a specific product by ID
 app.delete('/products/:id', (req, res) => {
   const productId = parseInt(req.params.id);
-  
-  // First, find the product by ID to get its name before deletion
+
+  // Step 1: First, find the product by ID to get its name before deletion
   const query = 'SELECT name FROM products WHERE id = ?';
   
   db.query(query, [productId], (err, result) => {
@@ -208,26 +219,28 @@ app.delete('/products/:id', (req, res) => {
     
     const productName = result[0].name;
 
-    // Proceed to delete the product from the database
+    // Step 2: Delete the product from the hashmap first
+    if (productHashMap[productName]) {
+      delete productHashMap[productName];
+      //console.log(`Removed product from hashmap: ${productName}`);
+    } else {
+      return res.status(404).json({ message: 'Product not found in hashmap' });
+    }
+
+    // Step 3: Proceed to delete the product from the database using the product name (from hashmap deletion)
     const deleteQuery = 'DELETE FROM products WHERE id = ?';
     
     db.query(deleteQuery, [productId], (err, result) => {
       if (err) {
         console.error(err);
-        return res.status(500).json({ message: 'Error deleting product' });
+        return res.status(500).json({ message: 'Error deleting product from database' });
       }
       
       if (result.affectedRows === 0) {
-        return res.status(404).json({ message: 'Product not found' });
-      }
-      
-      // Now, delete the product from the hashmap
-      if (productHashMap[productName]) {
-        delete productHashMap[productName];
-        //console.log(`Removed product from hashmap: ${productName}`);
+        return res.status(404).json({ message: 'Product not found in database' });
       }
 
-      res.json({ message: 'Product deleted successfully' });
+      res.json({ message: 'Product deleted successfully from both hashmap and database' });
     });
   });
 });
