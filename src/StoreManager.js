@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './StoreManager.css';
+import { Link } from 'react-router-dom'; // Import Link for navigation
+
 
 const StoreManager = () => {
   const [products, setProducts] = useState([]);
@@ -111,6 +113,21 @@ const StoreManager = () => {
   return (
     <div className="store-manager">
       <h1>Store Manager</h1>
+      <div className="navigation">
+        <h2>Reports</h2>
+        <ul>
+          <li>
+            <Link to="/inventory">
+              <button>Inventory Report</button>
+            </Link>
+          </li>
+          <li>
+            <Link to="/sales">
+              <button>Sales Report</button>
+            </Link>
+          </li>
+        </ul>
+      </div>
 
       {/* Form to add a new product */}
       <div className="product-form">

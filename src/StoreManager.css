@@ -107,3 +107,49 @@
     background-color: #5a6268;
   }
   
+  .navigation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px 0;
+  }
+  
+  .navigation h2 {
+    margin-bottom: 10px;
+    font-size: 24px;
+    color: #333;
+  }
+  
+  .navigation ul {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+  }
+  
+  .navigation li {
+    margin: 1rem;
+  }
+
+  .navigation a{
+    text-decoration: none;
+  }
+  
+  .navigation button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff; /* Blue background */
+    color: white; /* White text */
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .navigation button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+  }
+  
+  .navigation button:focus {
+    outline: none; /* Remove outline on focus */
+  }
+  

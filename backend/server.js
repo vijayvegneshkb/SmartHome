@@ -252,6 +252,28 @@ app.get('/productsuggestions', (req, res) => {
   });
 });
 
+app.get('/inventory', (req, res) => {
+  const query = `
+    SELECT 
+      p.name AS productName, 
+      p.price, 
+      i.quantity_available AS availableItems, 
+      i.on_sale AS onSale, 
+      i.rebate AS rebateAmount 
+    FROM 
+      inventory i 
+    JOIN 
+      products p ON i.product_id = p.id
+  `;
+  
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching inventory data:', err);
+      return res.status(500).json({ error: 'Error fetching data' });
+    }
+    res.json(results);
+  });
+});
 
 
 // API for fetching users for login
