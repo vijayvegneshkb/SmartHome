@@ -15,6 +15,7 @@ import Salesman from './Salesman';
 import Trending from './Trending';
 import InventoryReport from './InventoryReport';
 import SalesReport from './SalesReport';
+import Search from './Search';
 
 
 function App() {
@@ -67,6 +68,7 @@ function App() {
           <Route path="/trending" element={<Trending addToCart={addToCart} />} />
           <Route path="/inventory" element={<InventoryReport />} />
           <Route path="/sales" element={<SalesReport />} />
+          <Route path="/search" element={<Search addToCart={addToCart} />} />
         </Routes>
       </Layout>
     </Router>

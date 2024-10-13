@@ -331,6 +331,26 @@ app.get('/daily-sales', (req, res) => {
   });
 });
 
+app.get('/search', (req, res) => {
+  const { query } = req.query;
+
+  // Sanitize the input to prevent SQL injection
+  const sanitizedQuery = query.replace(/'/g, "''");
+
+  // SQL query to search for products matching the query
+  const sql = `
+    SELECT * FROM products
+    WHERE name LIKE '${sanitizedQuery.split('%20').join(' ')}%'`;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error fetching products:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.json(results);
+  });
+});
+
 // API for fetching users for login
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
