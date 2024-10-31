@@ -4,10 +4,44 @@ const cors = require('cors');
 const fs = require('fs');
 const xml2js = require('xml2js');
 const util = require('util');
+const path = require('path');
+const multer = require('multer'); // Middleware for handling file uploads
+const { v4: uuidv4 } = require('uuid'); // For generating unique ticket IDs
+
+require("dotenv").config({ path: "../.env" });
+const OpenAI = require('openai');
+
+console.log('api key', process.env.OPENAI_API_KEY);
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY, // This can be omitted as it's the default
+});
+
+
+
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
+
+
+// Setup multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadPath = './uploads/';
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath);
+    }
+    cb(null, uploadPath);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + '-' + file.originalname);
+  }
+});
+const upload = multer({ storage: storage });
+
 
 const db = mysql.createConnection({
   host: 'localhost',
@@ -912,12 +946,164 @@ app.get('/api/top-sold-products', (req, res) => {
   });
 });
 
+app.post('/customer-service/tickets', upload.single('image'), (req, res) => {
+  const { description } = req.body;
+  const image = req.file;
+
+  if (!description || !image) {
+    return res.status(400).json({ message: 'Description and image are required' });
+  }
+
+  // Generate a unique 4-digit ticket ID
+  const ticketId = Math.floor(1000 + Math.random() * 9000).toString();
+
+  // Save the ticket data in your MySQL database
+  const query = 'INSERT INTO tickets (ticket_id, description, image_path) VALUES (?, ?, ?)';
+  db.query(query, [ticketId, description, image.path], (err) => {
+    if (err) {
+      console.error('Error creating ticket:', err);
+      return res.status(500).json({ message: 'Error creating ticket' });
+    }
+
+    res.status(201).json({
+      message: 'Ticket created successfully',
+      ticketId: ticketId
+    });
+  });
+});
+
+const imageToBase64 = require('image-to-base64');
+
+app.get('/customer-service/tickets/:ticketId', async (req, res) => {
+  const ticketId = req.params.ticketId;
+
+  // Check if ticket exists
+  const queryCheckTicket = 'SELECT * FROM tickets WHERE ticket_id = ?';
+  db.query(queryCheckTicket, [ticketId], (err, result) => {
+    if (err) {
+      console.error('Error fetching ticket:', err);
+      return res.status(500).json({ message: 'Error retrieving ticket' });
+    }
+    if (result.length === 0) {
+      return res.status(404).json({ message: 'Ticket not found' });
+    }
+
+    const ticket = result[0];
+    const imagePath = path.join(__dirname, ticket.image_path);
+
+    // Check if a decision already exists in ticketstatuses
+    const queryCheckStatus = 'SELECT decision, justification FROM ticketstatuses WHERE ticket_id = ?';
+    db.query(queryCheckStatus, [ticket.ticket_id], async (err, statusResult) => {
+      if (err) {
+        console.error('Error checking ticket status:', err);
+        return res.status(500).json({ message: 'Error checking ticket status' });
+      }
+
+      // If a decision exists, return it
+      if (statusResult.length > 0) {
+        return res.json({
+          decision: statusResult[0].decision,
+          justification: statusResult[0].justification,
+        });
+      }
+
+      // If no decision exists, generate one using OpenAI
+      try {
+        const prompt = `Decide if the shipment with the following description and image is eligible for:
+                - "refund_order"
+                - "replace_order"
+                - "escalate_to_human_agent"
+
+                  Please respond in JSON format as:
+                  {
+                    "decision": "<refund_order|replace_order|escalate_to_human_agent>",
+                    "justification": "<brief justification based on description and image, mentioning alignment with description>"
+                  }
+
+                  Criteria for decision:
+                  1. If the customer states the product is damaged and the image confirms damage, respond with "replace_order" or "refund_order" based on customer preference.
+                  2. If the image appears fine but the customer claims damage, respond with "escalate_to_human_agent" for further verification.
+                  3. If the image does not match the customer report (e.g., the box is intact, but the customer claims it is damaged), respond with "escalate_to_human_agent" to verify discrepancies.
+                  4. If the product is not functioning as described (e.g., the customer reports it doesn't work, and the image shows it as intact), respond with "escalate_to_human_agent".
+                  5. If the customer states they want a refund and the image confirms the product is indeed damaged, respond with "refund_order".
+                  6. If the customer does not mention a return or refund, evaluate the image and description and choose the best decision based on whether the product is damaged, functioning correctly, or requires further investigation.
+
+                  Description given by customer: ${ticket.description}`;
+
+        imageToBase64(imagePath) // Convert the image to base64
+          .then(async (base64img) => {
+            try {
+              const response = await openai.chat.completions.create({
+                model: "gpt-4o-mini",
+                messages: [
+                  {
+                    role: "user",
+                    content: [
+                      { type: "text", text: prompt },
+                      { type: "image_url", image_url: { url: `data:image/jpeg;base64,${base64img}` } }
+                    ]
+                  }
+                ]
+              });
+
+              // Parse the JSON response
+              const assistantMessage = response.choices[0].message.content.trim();
+              const assistantMessageClean = assistantMessage.replace(/```json|```/g, '');
+              const { decision, justification } = JSON.parse(assistantMessageClean);
+
+              // Store the decision and justification in ticketstatuses
+              const queryInsertStatus = 'INSERT INTO ticketstatuses (ticket_id, decision, justification) VALUES (?, ?, ?)';
+              db.query(queryInsertStatus, [ticket.ticket_id, decision, justification], (err) => {
+                if (err) {
+                  console.error('Error saving decision:', err);
+                  return res.status(500).json({ message: 'Error saving decision' });
+                }
+
+                res.json({ decision, justification });
+              });
+            } catch (error) {
+              console.error('Error with OpenAI API or parsing response:', error);
+              res.status(500).json({ message: 'Error processing response' });
+            }
+          })
+          .catch((error) => {
+            console.error('Error converting image to base64:', error);
+            res.status(500).json({ message: 'Error processing image' });
+          });
+      } catch (error) {
+        console.error('Error generating decision with OpenAI:', error);
+        res.status(500).json({ message: 'Error generating decision' });
+      }
+    });
+  });
+});
+
+
+app.get('/customer-service/tickets', (req, res) => {
+  const query = 'SELECT ticket_id, description, image_path FROM tickets';
+
+  db.query(query, (error, results) => {
+    if (error) {
+      console.error('Error fetching tickets:', error);
+      return res.status(500).json({ message: 'Error retrieving tickets' });
+    }
+    //console.log('results', results);
+    res.json(results);
+  });
+});
+
+
+/* -------- Server Port Declaration --------    */
 
 // Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+
+
+/* -------- MONGODB --------    */
 
 
 const { MongoClient } = require('mongodb');

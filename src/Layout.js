@@ -127,6 +127,7 @@ const Layout = ({ children, cart, setCart, addToCart }) => {
             <li><Link to="/speakers">Speakers</Link></li>
             <li><Link to="/lightings">Lightings</Link></li>
             <li><Link to="/thermostats">Thermostats</Link></li>
+            <li><Link to="/customer-service" className="customer-service-link">Customer Service</Link></li>
           </ul>
           <div className="user-actions">
             <Link to="/orders" className="action-button">Orders</Link>

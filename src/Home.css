@@ -75,6 +75,8 @@
 
 .menu-list li {
     margin-right: 20px;
+    display: grid;
+    align-content: center;
 }
 
 .menu-list a {
@@ -293,3 +295,16 @@
 .suggestions-list li:hover {
     background-color: #f0f0f0; /* Highlight on hover */
 }
+
+.menu-list li .customer-service-link {
+    color: #ffffff;
+    background-color: #ff4c4c; /* Primary blue color */
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  
+  .menu-list li .customer-service-link:hover {
+    background-color: #ff1a1a; /* Darker blue on hover */
+  }

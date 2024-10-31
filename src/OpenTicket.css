@@ -1,0 +1,78 @@
+/* src/OpenTicket.css */
+.open-ticket-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    background-color: #f9f9f9; /* Light background for the section */
+  }
+  
+  .open-ticket-form-container {
+    width: 100%;
+    max-width: 500px;
+    background-color: #ffffff; /* White background for the form */
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow for form container */
+  }
+  
+  .open-ticket-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .open-ticket-form label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333333;
+    width: 100%
+  }
+  
+  .open-ticket-form textarea {
+    resize: vertical;
+    min-height: 100px;
+    padding: 0.8rem;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 90%;
+  }
+  
+  .open-ticket-form input[type="file"] {
+    font-size: 1rem;
+    border: none;
+  }
+  
+  .open-ticket-form button {
+    padding: 0.8rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin: auto;
+    width: 40%;
+  }
+  
+  .open-ticket-form button:hover {
+    background-color: #0056b3;
+  }
+  
+  .ticket-id {
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    color: green;
+    text-align: center;
+  }
+  
+  .error-message {
+    color: red;
+    font-size: 1rem;
+    text-align: center;
+  }
+  
+  

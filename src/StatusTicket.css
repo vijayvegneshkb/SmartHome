@@ -1,0 +1,104 @@
+/* src/StatusOfTicket.css */
+
+.status-ticket-section {
+  margin: 20px auto;
+  padding: 25px;
+  max-width: 600px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+  font-family: Arial, sans-serif;
+}
+
+.status-ticket-section h2 {
+  font-size: 28px;
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.status-ticket-form label {
+  display: block;
+  font-size: 16px;
+  color: #333;
+  margin-top: 20px;
+  width: 95%;
+}
+
+.status-ticket-form input[type="text"] {
+  width: 100%;
+  padding: 12px;
+  margin-top: 5px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border 0.3s ease;
+}
+
+.status-ticket-form input[type="text"]:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+}
+
+.status-ticket-form button {
+  margin-top: 20px;
+  padding: 12px;
+  width: 100%;
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+  width: 40%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.status-ticket-form button:hover {
+  background-color: #0056b3;
+}
+
+.status-ticket-form button:active {
+  transform: scale(0.98);
+}
+
+.ticket-decision-container {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f1f1f1;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.ticket-decision {
+  font-size: 18px;
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.ticket-decision .label {
+  color: #555;
+}
+
+.ticket-justification {
+  font-size: 16px;
+  color: #666;
+  line-height: 1.6;
+  margin-top: 5px;
+}
+
+.error-message {
+  margin-top: 20px;
+  padding: 12px;
+  background-color: #fdecea;
+  color: #e74c3c;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+  font-size: 16px;
+  text-align: center;
+}

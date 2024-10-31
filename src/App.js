@@ -16,6 +16,9 @@ import Trending from './Trending';
 import InventoryReport from './InventoryReport';
 import SalesReport from './SalesReport';
 import Search from './Search';
+import CustomerService from './CustomerService';
+import OpenTicket from './OpenTicket';
+import StatusTicket from './StatusTicket';
 
 
 function App() {
@@ -69,6 +72,9 @@ function App() {
           <Route path="/inventory" element={<InventoryReport />} />
           <Route path="/sales" element={<SalesReport />} />
           <Route path="/search" element={<Search addToCart={addToCart} />} />
+          <Route path="/customer-service" element={<CustomerService />} />
+          <Route path="/customer-service/open-ticket" element={<OpenTicket />} />
+          <Route path="/customer-service/status-ticket" element={<StatusTicket />} />
         </Routes>
       </Layout>
     </Router>
