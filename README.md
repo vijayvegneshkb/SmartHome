@@ -14,6 +14,7 @@ This document provides a guide on setting up the **MySQL** and **MongoDB** datab
    - [Backend Setup](#backend-setup)
    - [Frontend Setup](#frontend-setup)
 4. [Configuring the Project](#configuring-the-project)
+   - [OpenAI API Key Setup](#openai-api-key-setup)
 
 ---
 
@@ -59,8 +60,6 @@ Make sure you have the following installed:
 3. Select the **reviews** collection, or create it if it doesn't exist.
 4. Click the **Import Data** button at the top right.
 5. Choose the `.json` file, select **JSON** as the file type, and import the data into the `reviews` collection.
-
-
 
 ---
 
@@ -121,12 +120,19 @@ To run the application, you need to run the frontend and backend separately.
    });
    ```
 
+### OpenAI API Key Setup
+1. In the `smart-homes/backend` folder, locate the `.env` file or create one if it doesn’t exist.
+2. Add your OpenAI API key in the `.env` file as shown below:
+   ```env
+   OPENAI_API_KEY=REPLACE_YOUR_API_KEY_HERE
+   ```
+
 ---
 
 ## Additional Notes
 
 - Ensure that both **MySQL** and **MongoDB** servers are running before starting the application.
 - If you need to reset the databases, follow the import instructions again for **MySQL** and **MongoDB**.
-- The backend must be running on `localhost:5000`  for API requests to work correctly from the frontend.
+- The backend must be running on `localhost:5000` for API requests to work correctly from the frontend.
 
 Feel free to reach out for further assistance or queries.
