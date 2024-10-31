@@ -955,7 +955,8 @@ app.post('/customer-service/tickets', upload.single('image'), (req, res) => {
   }
 
   // Generate a unique 4-digit ticket ID
-  const ticketId = Math.floor(1000 + Math.random() * 9000).toString();
+  //const ticketId = Math.floor(1000 + Math.random() * 9000).toString();
+  const ticketId = uuidv4();
 
   // Save the ticket data in your MySQL database
   const query = 'INSERT INTO tickets (ticket_id, description, image_path) VALUES (?, ?, ?)';
@@ -1089,6 +1090,48 @@ app.get('/customer-service/tickets', (req, res) => {
     }
     //console.log('results', results);
     res.json(results);
+  });
+});
+
+app.delete('/customer-service/tickets/:ticketId', (req, res) => {
+  const ticketId = req.params.ticketId;
+
+  // First, retrieve the image path for the ticket
+  const selectSql = 'SELECT image_path FROM tickets WHERE ticket_id = ?';
+  db.query(selectSql, [ticketId], (err, results) => {
+    if (err) {
+      console.error('Error fetching ticket image path: ', err);
+      return res.status(500).json({ error: 'Failed to delete ticket' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Ticket not found' });
+    }
+
+    const imagePath = results[0].image_path;
+
+    // Delete the ticket from the database
+    const deleteSql = 'DELETE FROM tickets WHERE ticket_id = ?';
+    db.query(deleteSql, [ticketId], (deleteErr, result) => {
+      if (deleteErr) {
+        console.error('Error deleting ticket: ', deleteErr);
+        return res.status(500).json({ error: 'Failed to delete ticket' });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'Ticket not found' });
+      }
+
+      // Delete the image file from the filesystem
+      fs.unlink(imagePath, (unlinkErr) => {
+        if (unlinkErr) {
+          console.error('Error deleting image file:', unlinkErr);
+          return res.status(500).json({ error: 'Failed to delete image file' });
+        }
+
+        res.status(200).json({ message: 'Ticket and associated image deleted successfully' });
+      });
+    });
   });
 });
 

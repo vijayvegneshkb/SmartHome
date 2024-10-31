@@ -1,5 +1,5 @@
-// src/OpenTicket.js
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './OpenTicket.css';
 
 const OpenTicket = () => {
@@ -7,6 +7,8 @@ const OpenTicket = () => {
   const [image, setImage] = useState(null);
   const [ticketId, setTicketId] = useState('');
   const [error, setError] = useState(null);
+
+  const navigate = useNavigate();
 
   const handleImageChange = (e) => {
     setImage(e.target.files[0]);
@@ -43,6 +45,10 @@ const OpenTicket = () => {
 
   return (
     <div className="open-ticket-section">
+      <button className="back-button" onClick={() => navigate('/customer-service')}>
+        &#8592; Back
+      </button>
+      
       <div className="open-ticket-form-container">
         <h2>Open a Customer Service Ticket</h2>
         <form onSubmit={handleSubmit} className="open-ticket-form">

@@ -75,4 +75,37 @@
     text-align: center;
   }
   
+  .open-ticket-section {
+    position: relative;
+    padding: 20px;
+  }
   
+  .back-button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s;
+  }
+  
+  .back-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .open-ticket-form label {
+    display: block;
+    margin: 15px 0;
+  }
+
+  
+  .open-ticket-form button {
+    padding: 10px 20px;
+    margin-top: 15px;
+  }

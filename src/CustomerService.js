@@ -23,17 +23,33 @@ const CustomerService = () => {
       .catch(error => console.error('Error fetching tickets:', error));
   }, []);
 
+  const handleDeleteTicket = (ticketId) => {
+    fetch(`http://localhost:5000/customer-service/tickets/${ticketId}`, {
+      method: 'DELETE',
+    })
+      .then(response => {
+        if (response.ok) {
+          setTickets(prevTickets => prevTickets.filter(ticket => ticket.ticket_id !== ticketId));
+        } else {
+          console.error('Error deleting ticket');
+        }
+      })
+      .catch(error => console.error('Error deleting ticket:', error));
+  };
+
   return (
-    <div className="customer-service-section">
-      <h2>Customer Service</h2>
-      <p>Choose an option below:</p>
-      <div className="customer-service-options">
-        <button onClick={handleOpenTicket} className="customer-service-button">
-          Open a Ticket
-        </button>
-        <button onClick={handleStatusOfTicket} className="customer-service-button">
-          Status of a Ticket
-        </button>
+    <div className="customer-service-container">
+      <div className="customer-service-section">
+        <h2>Customer Service</h2>
+        <p>Choose an option below:</p>
+        <div className="customer-service-options">
+          <button onClick={handleOpenTicket} className="customer-service-button">
+            Open a Ticket
+          </button>
+          <button onClick={handleStatusOfTicket} className="customer-service-button">
+            Status of a Ticket
+          </button>
+        </div>
       </div>
 
       <div className="ticket-cards-container">
@@ -46,6 +62,12 @@ const CustomerService = () => {
               alt={`Ticket ${ticket.ticket_id} - ${ticket.description}`} 
               className="ticket-image" 
             />
+            <button 
+              onClick={() => handleDeleteTicket(ticket.ticket_id)} 
+              className="delete-button"
+            >
+              Delete
+            </button>
           </div>
         ))}
       </div>
