@@ -7,6 +7,8 @@ const Layout = ({ children, cart, setCart, addToCart }) => {
   const [categories, setCategories] = useState({});
   const [searchQuery, setSearchQuery] = useState(''); // State for search input
   const [suggestions, setSuggestions] = useState([]); // State for search suggestions
+  const [recommendationQuery, setRecommendationQuery] = useState('');
+  const [searchReviewQuery, setSearchReviewQuery] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -71,6 +73,58 @@ const Layout = ({ children, cart, setCart, addToCart }) => {
     setSearchQuery(''); 
   };
 
+  const handleRecommendProduct = async () => {
+    if (recommendationQuery.trim() === '') return;
+  
+    try {
+      const response = await fetch('http://localhost:5000/recommend-product', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: recommendationQuery }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Recommended Products:", data.products);
+        setRecommendationQuery('');
+  
+        // Navigate to the recommended products page with the data
+        navigate('/recommended-products', { state: { products: data.products } });
+      } else {
+        console.error('Error fetching recommendations:', await response.text());
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const handleSearchReviewQuery = async () => {
+    if (searchReviewQuery.trim() === '') return;
+    console.log('SearchReviewQuery:', searchReviewQuery);
+    try {
+      const response = await fetch('http://localhost:5000/search-review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: searchReviewQuery }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log("data:", data);
+        setSearchReviewQuery('');
+  
+      // Navigate to the ProductReviewsPage with the review data
+      navigate('/product-reviews', { state: { reviewsData: data } });
+
+      } else {
+        console.error('Error fetching search reviews:', await response.text());
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+  
+
   const cartItemsCount = cart.length;
 
   return (
@@ -93,7 +147,7 @@ const Layout = ({ children, cart, setCart, addToCart }) => {
             />
             <button type="submit" className="search-button">Search</button>
           </form>
-
+          
           {/* Autocomplete Suggestions */}
           {suggestions.length > 0 && (
             <ul className="suggestions-list">
@@ -105,6 +159,7 @@ const Layout = ({ children, cart, setCart, addToCart }) => {
             </ul>
           )}
 
+          
           {/* User Info Section */}
           <div className="user-info">
             {user && user.username && <span className="user-greeting">Hello, {user.username}</span>}
@@ -116,7 +171,43 @@ const Layout = ({ children, cart, setCart, addToCart }) => {
           </div>
         </div>
       </header>
+      <div className="input-new-container" >
+        {/* Recommendation Input and Button */}
+        <div className="recommendation-container">
+          <input
+            type="text"
+            value={recommendationQuery}
+            onChange={(e) => setRecommendationQuery(e.target.value)}
+            placeholder="Search for your desired product..."
+            className="recommendation-input"
+          />
+          <button
+            type="button"
+            onClick={handleRecommendProduct}
+            className="recommendation-button"
+          >
+            Recommend Product
+          </button>
+        </div>
 
+        {/* Recommendation Input and Button */}
+        <div className="searchReview-container">
+          <input
+            type="text"
+            value={searchReviewQuery}
+            onChange={(e) => setSearchReviewQuery(e.target.value)}
+            placeholder="Search for reviews..."
+            className="searchReview-input"
+          />
+          <button
+            type="button"
+            onClick={handleSearchReviewQuery}
+            className="searchReview-button"
+          >
+            Search Reviews
+          </button>
+        </div>
+      </div>
       {/* Top Menu Bar - Conditional Rendering */}
       {location.pathname !== '/store-manager' && ( // Only show if not on store-manager page
         <nav className="menu-bar">

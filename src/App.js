@@ -19,6 +19,8 @@ import Search from './Search';
 import CustomerService from './CustomerService';
 import OpenTicket from './OpenTicket';
 import StatusTicket from './StatusTicket';
+import RecommendedProducts from './RecommendedProducts';
+import ProductReviewsPage from './ProductReviewsPage';
 
 
 function App() {
@@ -75,6 +77,8 @@ function App() {
           <Route path="/customer-service" element={<CustomerService />} />
           <Route path="/customer-service/open-ticket" element={<OpenTicket />} />
           <Route path="/customer-service/status-ticket" element={<StatusTicket />} />
+          <Route path="/recommended-products" element={<RecommendedProducts addToCart={addToCart} />} />
+          <Route path="/product-reviews" element={<ProductReviewsPage />} />
         </Routes>
       </Layout>
     </Router>

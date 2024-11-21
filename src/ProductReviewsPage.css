@@ -1,0 +1,88 @@
+.reviews-container {
+    padding: 20px;
+    background-color: #f4f4f9;
+    font-family: 'Arial', sans-serif;
+}
+
+.reviews-container h1 {
+    text-align: center;
+    color: #333;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+.product-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.product-section h2 {
+    color: #2c3e50;
+    font-size: 1.8em;
+    margin-bottom: 10px;
+}
+
+.product-section h3 {
+    color: #7f8c8d;
+    font-size: 1.4em;
+    margin-bottom: 15px;
+}
+
+.reviews-list {
+    margin-top: 20px;
+}
+
+.review-card {
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    
+}
+
+.review-card:hover {
+    
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.review-card p {
+    margin: 8px 0;
+    font-size: 1.1em;
+    color: #34495e;
+}
+
+.review-card p strong {
+    color: #2c3e50;
+}
+
+.product-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.view-product-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.view-product-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.view-product-button:active {
+    transform: scale(0.95);
+}

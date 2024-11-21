@@ -7,18 +7,18 @@ const util = require('util');
 const path = require('path');
 const multer = require('multer'); // Middleware for handling file uploads
 const { v4: uuidv4 } = require('uuid'); // For generating unique ticket IDs
+const { Client } = require('@elastic/elasticsearch');
 
 require("dotenv").config({ path: "../.env" });
 const OpenAI = require('openai');
 
 console.log('api key', process.env.OPENAI_API_KEY);
 
+const ELASTICSEARCH_URL = 'http://localhost:9200/';
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY, // This can be omitted as it's the default
 });
-
-
-
 
 const app = express();
 app.use(cors());
@@ -1133,6 +1133,148 @@ app.delete('/customer-service/tickets/:ticketId', (req, res) => {
       });
     });
   });
+});
+
+
+
+
+/* ---------------------------------------------------- */
+const esClient = new Client({ node: ELASTICSEARCH_URL });
+
+
+// Embedding function
+async function getEmbedding(text, model = "text-embedding-3-small") {
+  const embedding = await openai.embeddings.create({
+    model: model,
+    input: text,
+    encoding_format: "float",
+  });
+
+  return embedding.data[0].embedding;
+}
+
+// API Endpoint for product recommendations
+app.post('/recommend-product', async (req, res) => {
+  const { query } = req.body;
+
+  if (!query) {
+    return res.status(400).json({ error: 'Query is required' });
+  }
+
+  try {
+    // Generate embedding for the query
+    const queryEmbedding = await getEmbedding(query);
+
+    // Search Elasticsearch using KNN
+    const response = await esClient.search({
+      index: 'product_embeddings',
+      knn: {
+        field: 'products_vector', // Vector field in Elasticsearch
+        query_vector: queryEmbedding,
+        k: 5,
+        num_candidates: 100,
+      },
+    });
+
+    // Format response
+    const products = response.hits.hits.map((hit) => {
+      const { _source } = hit;
+      return {
+        id: hit._id,
+        score: hit._score,
+        name: _source.name,
+        price: _source.price,
+        image: _source.image,
+        manufacturer: _source.manufacturer,
+        category: _source.category,
+        quantity_available: _source.quantity_available,
+        on_sale: _source.on_sale,
+        rebate: _source.rebate,
+        description: _source.description,
+      };
+    });
+
+    console.log("products sent as json: ", products);
+    // Send response
+    res.json({ products });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'An error occurred while processing your request.' });
+  }
+});
+
+
+
+
+/* -------------------------------- */
+
+// API Endpoint for searching reviews
+app.post('/search-review', async (req, res) => {
+  const { query } = req.body;
+
+  console.log("query: ", query);
+
+  if (!query) {
+    return res.status(400).json({ error: 'Query is required' });
+  }
+
+  try {
+    // Generate embedding for the query
+    const queryEmbedding = await getEmbedding(query);
+
+    // Search Elasticsearch using KNN
+    const response = await esClient.search({
+      index: 'reviews_per_product',
+      knn: {
+        field: 'reviews.review_vector', // Vector field in Elasticsearch
+        query_vector: queryEmbedding,
+        k: 5,
+        num_candidates: 100,
+      },
+    });
+
+    // Process and format the response
+    const productReviews = {};
+
+    response.hits.hits.forEach((hit) => {
+      const { _source, _score } = hit;
+      const { ProductName, Category, reviews } = _source;
+
+      // Ensure the product name and category combination exists in the dictionary
+      const key = `${ProductName}__${Category}`;
+      if (!productReviews[key]) {
+        productReviews[key] = {
+          ProductName,
+          Category,
+          reviews: [],
+        };
+      }
+
+      // Add reviews with scores to the product reviews
+      if (Array.isArray(reviews)) {
+        reviews.forEach((review) => {
+          productReviews[key].reviews.push({
+            ...review,
+            score: _score,
+          });
+        });
+      } else if (reviews) {
+        productReviews[key].reviews.push({
+          ...reviews,
+          score: _score,
+        });
+      }
+    });
+
+    // Convert productReviews dictionary to an array for easier JSON response
+    const formattedResponse = Object.values(productReviews);
+
+    // Send the formatted response
+    res.json({ reviews: formattedResponse });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'An error occurred while processing your request.' });
+  }
 });
 
 

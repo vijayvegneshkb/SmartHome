@@ -24,13 +24,30 @@ const CartPage = ({ cartItems, setCart }) => {
   }, [setCart]);
 
   const importImage = (imageName) => {
+    // Check if the imageName is a valid URL
+    const isValidUrl = (string) => {
+      try {
+        new URL(string); // Try to create a URL object
+        return true;
+      } catch (_) {
+        return false; // Return false if it's not a valid URL
+      }
+    };
+  
     try {
+      // If the imageName is a valid URL, return it directly
+      if (isValidUrl(imageName)) {
+        return imageName;
+      }
+      
+      // Otherwise, try to load it as a local image
       return require(`./assets/images/${imageName}`);
     } catch (error) {
       console.error(`Error loading image ${imageName}:`, error);
-      return null; // Return a default image or null if the image cannot be loaded
+      return null; // Return null if the image cannot be loaded
     }
   };
+  
 
   return (
     <div className="cart-page">
