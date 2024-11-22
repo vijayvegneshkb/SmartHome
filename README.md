@@ -15,6 +15,8 @@ This document provides a guide on setting up the **MySQL** and **MongoDB** datab
    - [Frontend Setup](#frontend-setup)
 4. [Configuring the Project](#configuring-the-project)
    - [OpenAI API Key Setup](#openai-api-key-setup)
+5. [Additional Setup for SmartHome Reviews and Recommended Products](#additional-setup-for-smarthome-reviews-and-recommended-products)
+6. [JSON File Creation Using OpenAI Script](#json-file-creation-using-openai-script)
 
 ---
 
@@ -125,6 +127,32 @@ To run the application, you need to run the frontend and backend separately.
 2. Add your OpenAI API key in the `.env` file as shown below:
    ```env
    OPENAI_API_KEY=REPLACE_YOUR_API_KEY_HERE
+   ```
+
+---
+
+## Additional Setup for SmartHome Reviews and Recommended Products
+
+1. Navigate to the `SmartHomes_ES_Docker_OpenAI_with_Dataset` folder.
+2. Follow the steps in the `Readme_Push_SmartHome_Reviews.txt` and `Readme_Pull_SmartHome_Reviews.txt` files.
+3. Ensure that the Docker containers are running:
+   ```bash
+   docker-compose up
+   ```
+
+---
+
+## JSON File Creation Using OpenAI Script
+
+1. Go to the `OpenAI_Script` folder.
+2. Activate the virtual environment:
+   ```bash
+   source venv/bin/activate   # On macOS/Linux
+   venv\Scripts\activate      # On Windows
+   ```
+3. Run the script to create JSON files:
+   ```bash
+   python creation.py
    ```
 
 ---
